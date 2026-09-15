@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>up2digital | Building the Digital Ecosystem for Indonesia</title>
+    <meta name="description" content="up2digital - Technology, commerce, media and creative solutions built for a digital future.">
+    
+    <!-- Favicon (Dinamis via API) -->
+    <link id="asset_favicon" rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/up2digi-app/up2digital/main/favicon.ico">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], },
+                    colors: { up2accent: '#0ea5e9', up2dark: '#0f172a', up2gray: '#64748b', up2light: '#f8fafc', }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { background-color: #f8fafc; color: #0f172a; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        .view-page { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+        .view-page.active { display: block; opacity: 1; }
+        #navbar { transition: all 0.3s ease; border-bottom: 1px solid transparent; }
+        .nav-scrolled { background-color: rgba(15, 23, 42, 0.98) !important; backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; padding-top: 1rem !important; padding-bottom: 1rem !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
+        .fullscreen-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: opacity 0.5s ease; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 50%, rgba(0,0,0,0.5) 100%); z-index: 1; }
+        #mobile-menu { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .drawer-open { transform: translateX(0); }
+        .drawer-closed { transform: translateX(100%); }
+        h1, h2, h3 { letter-spacing: -0.03em; }
+        .text-balance { text-wrap: balance; }
+        
+        .eco-node-wrapper { position: absolute; width: 0; height: 0; display: flex; align-items: center; justify-content: center; z-index: 30; }
+        .eco-node { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 12px 24px; color: white; white-space: nowrap; opacity: 0; transform: scale(0.8) translateY(15px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; }
+        .eco-node.active { opacity: 1; transform: scale(1) translateY(0); }
+        .line-animate { stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: drawLine 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
+        
+        .founder-blend-mask { mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%); }
+        .org-chart-wrapper { position: relative; padding-top: 40px; }
+        .org-node { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px 24px; text-align: center; position: relative; transition: all 0.3s ease; }
+        .org-connector-v { position: absolute; top: 100%; left: 50%; width: 2px; height: 20px; background-color: rgba(255,255,255,0.2); transform: translateX(-50%); }
+        
+        .accordion-header { cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .accordion-header:hover { background-color: #0ea5e9; color: white !important; border-color: transparent; }
+        .accordion-header:hover .accordion-icon { color: white; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease; opacity: 0; }
+        .accordion-content.expanded { opacity: 1; }
+        .accordion-icon { transition: transform 0.4s ease; }
+        .accordion-icon.rotated { transform: rotate(180deg); }
+        
+        .split-container { display: flex; width: 100%; height: 75vh; min-height: 500px; overflow: hidden; }
+        .split-panel { flex: 1; position: relative; transition: flex 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); background-size: cover; background-position: center top; cursor: pointer; overflow: hidden; border-right: 1px solid rgba(255,255,255,0.1); }
+        .split-panel:last-child { border-right: none; }
+        .split-panel:hover { flex: 1.6; }
+        .split-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.6) 50%, rgba(15,23,42,0.4) 100%); transition: background 0.5s ease; z-index: 1; }
+        .split-panel:hover .split-overlay { background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.3) 60%, rgba(15,23,42,0.1) 100%); }
+        .split-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 3rem; z-index: 10; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+        .split-desc { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.5s ease; transform: translateY(20px); }
+        .split-panel:hover .split-desc { max-height: 150px; opacity: 1; transform: translateY(0); margin-top: 1rem; margin-bottom: 1.5rem; }
+        .split-btn { opacity: 0; transform: translateY(20px); transition: all 0.5s ease; transition-delay: 0.1s; }
+        .split-panel:hover .split-btn { opacity: 1; transform: translateY(0); }
+        
+        .nav-item { position: relative; padding-bottom: 4px; }
+        .nav-item::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background-color: #0ea5e9; transform: scaleX(0); transform-origin: right; transition: transform 0.3s ease; }
+        .nav-item:hover::after, .nav-item.text-up2accent::after { transform: scaleX(1); transform-origin: left; }
+        
+        @media (max-width: 768px) {
+            .founder-blend-mask { mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%); }
+            .eco-node { padding: 8px 16px; }
+            .org-node { padding: 12px; font-size: 14px; }
+            .split-container { flex-direction: column; height: auto; }
+            .split-panel { height: 400px; flex: none !important; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .split-overlay { background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 100%) !important; }
+            .split-desc, .split-btn { max-height: 200px; opacity: 1; transform: translateY(0); margin-top: 1rem; }
+            .split-content { padding: 2rem; }
+        }
+        
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav id="navbar" class="fixed w-full top-0 z-50 px-6 py-5 bg-transparent flex justify-between items-center text-white transition-all duration-300">
+        <a href="#/" class="flex-shrink-0 flex items-center gap-2" aria-label="Beranda up2digital">
+            <img id="asset_logo_color_1" src="https://raw.githubusercontent.com/up2digi-app/up2digital/main/logo-colour-nbg.png" alt="up2digital Logo" class="h-10 md:h-12 object-contain">
+            <span class="font-bold text-2xl md:text-3xl tracking-tight">up2digital</span>
+        </a>
+        
+        <div class="hidden lg:flex items-center space-x-8 text-[18px] font-medium">
+            <a href="#/" class="nav-item nav-link-item hover:text-up2accent transition-colors" data-i18n="nav-home">Beranda</a>
+            <a href="#/about" class="nav-item nav-link-item hover:text-up2accent transition-colors" data-i18n="nav-about">Tentang Kami</a>
+            <a href="#/products" class="nav-item nav-link-item hover:text-up2accent transition-colors" data-i18n="nav-prod">Produk</a>
+            <a href="#/news" class="nav-item nav-link-item hover:text-up2accent transition-colors" data-i18n="nav-news">Ruang Berita</a>
+            <a href="#/careers" class="nav-item nav-link-item hover:text-up2accent transition-colors" data-i18n="nav-careers">Karier</a>
+            <a href="#/contact" class="nav-item nav-link-item hover:text-up2accent transition-colors" data-i18n="nav-contact">Hubungi Kami</a>
+            
+            <div class="flex items-center space-x-3 pl-4 border-l border-white/20">
+                <button onclick="setLang('id')" id="btn-lang-id" class="font-bold text-white transition-colors">ID</button>
+                <span class="text-white/30">|</span>
+                <button onclick="setLang('en')" id="btn-lang-en" class="text-white/50 hover:text-white transition-colors">EN</button>
+            </div>
+        </div>
+
+        <button id="mobile-menu-btn" class="lg:hidden text-white p-2 focus:outline-none" aria-label="Menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+    </nav>
+
+    <div id="mobile-menu" class="fixed inset-0 bg-up2dark z-[60] drawer-closed flex flex-col">
+        <div class="flex justify-between items-center p-6 border-b border-white/10">
+            <a href="#/" class="mobile-link flex items-center gap-2">
+                <img id="asset_logo_color_2" src="https://raw.githubusercontent.com/up2digi-app/up2digital/main/logo-colour-nbg.png" alt="up2digital Logo" class="h-10 md:h-12 object-contain">
+                <span class="font-bold text-2xl md:text-3xl tracking-tight text-white">up2digital</span>
+            </a>
+            <button id="close-menu-btn" class="text-white p-2 focus:outline-none"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+        <div class="flex flex-col p-6 space-y-6 overflow-y-auto text-white text-xl font-medium">
+            <a href="#/" class="mobile-link hover:text-up2accent" data-i18n="nav-home">Beranda</a>
+            <a href="#/about" class="mobile-link hover:text-up2accent" data-i18n="nav-about">Tentang Kami</a>
+            <a href="#/products" class="mobile-link hover:text-up2accent" data-i18n="nav-prod">Produk</a>
+            <a href="#/news" class="mobile-link hover:text-up2accent" data-i18n="nav-news">Ruang Berita</a>
+            <a href="#/careers" class="mobile-link hover:text-up2accent" data-i18n="nav-careers">Karier</a>
+            <a href="#/contact" class="mobile-link px-6 py-3 bg-up2accent text-white font-bold rounded-full text-center mt-4 shadow-lg shadow-sky-500/30" data-i18n="nav-contact">Hubungi Kami</a>
+        </div>
+    </div>
+
+    <main id="app-container">
+        
+        <div id="view-home" class="view-page active">
+            <section class="relative h-screen min-h-[600px] w-full flex items-center justify-center overflow-hidden">
+                <img id="asset_hero_img" src="https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/Entrepreneurs_collaborating.jpg" alt="Entrepreneurs collaborating" class="fullscreen-bg">
+                <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.6) 50%, rgba(0,0,0,0.4) 100%);"></div>
+                
+                <div class="relative z-10 w-full mt-16 flex justify-start">
+                    <div class="container mx-auto px-6 max-w-7xl flex flex-col items-start text-left">
+                        <h1 class="font-bold text-white mb-2 flex flex-col items-start">
+                            <span class="text-6xl md:text-7xl lg:text-[5.5rem] mb-2 text-white drop-shadow-lg tracking-tight">UP2Digital</span>
+                            <span id="copy_hero_title" class="text-3xl md:text-4xl lg:text-5xl max-w-4xl text-gray-200 leading-tight tracking-tight mt-2" data-i18n="hero-tag">Membangun Ekosistem Digital untuk Indonesia</span>
+                        </h1>
+                    </div>
+                </div>
+            </section>
+
+            <section class="relative min-h-[70vh] md:min-h-[85vh] w-full flex items-center justify-center overflow-hidden bg-up2dark text-white py-24">
+                <video id="asset_hero_vid_player" class="fullscreen-bg opacity-20" autoplay muted loop playsinline>
+                    <source id="asset_hero_vid" src="https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/Wireframe-globe-emitting-laser.mp4" type="video/mp4">
+                </video>
+                
+                <div class="relative z-10 container mx-auto px-6 max-w-6xl flex flex-col items-center text-center">
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tighter text-balance leading-tight drop-shadow-md">
+                        <span class="block mb-2 text-white" data-i18n="eco-title-1">UP2Digital</span>
+                        <span class="block text-3xl md:text-4xl lg:text-5xl text-gray-300 mt-2" data-i18n="eco-title-2">Satu Ekosistem, Banyak Peluang</span>
+                    </h2>
+                    
+                    <div class="relative w-full max-w-4xl mx-auto h-[400px] md:h-[500px] mt-10 mb-8 flex items-center justify-center">
+                        <div class="z-20 text-center bg-up2dark/60 backdrop-blur-md p-6 md:p-10 rounded-full border border-white/10 shadow-[0_0_60px_rgba(14,165,233,0.15)] flex flex-col items-center justify-center w-48 h-48 md:w-64 md:h-64 transition-transform duration-500 hover:scale-105">
+                            <div class="text-xs md:text-sm font-bold tracking-widest text-white/50 uppercase mb-2">Ecosystem Pillar</div>
+                            <div id="pillar-text" class="text-2xl md:text-4xl font-bold text-up2accent transition-all duration-700 opacity-100 scale-100">Technology</div>
+                        </div>
+                        <svg id="node-lines" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
+                        <div id="floating-nodes" class="absolute inset-0 w-full h-full pointer-events-none z-30"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="view-about" class="view-page">
+            <section class="pt-32 pb-24 md:pt-40 md:pb-32 bg-up2dark text-white min-h-[70vh] flex items-center overflow-hidden">
+                <div class="container mx-auto px-6 max-w-7xl">
+                    <div class="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
+                        <div class="w-full lg:w-[40%] flex flex-col justify-center space-y-8 relative z-10">
+                            <h1 class="text-3xl md:text-4xl lg:text-4xl font-bold tracking-tight leading-tight" data-i18n="about-title">Sekilas Tentang up2digital</h1>
+                            <p class="text-lg text-gray-300 font-light leading-relaxed" data-i18n="about-p1">
+                                up2digital adalah ekosistem digital terintegrasi yang berdedikasi untuk memajukan UMKM dan ekonomi kreatif Indonesia. Misi kami adalah mendemokratisasi akses teknologi, memastikan setiap pelaku usaha memiliki infrastruktur dan solusi digital yang mereka butuhkan untuk bersaing dan berkembang.
+                            </p>
+                            <p class="text-lg text-gray-300 font-light leading-relaxed" data-i18n="about-p2">
+                                Dari penyediaan aplikasi kasir cerdas, platform e-commerce, pembuatan aset kreatif, hingga edukasi pemanfaatan AI, kami menyatukan berbagai layanan ke dalam satu ekosistem yang kohesif.
+                            </p>
+                            <div>
+                                <a href="#/products" class="inline-block px-8 py-4 bg-transparent border border-white text-white rounded-full font-semibold hover:bg-up2accent hover:border-up2accent hover:text-white transition-all duration-300 group" data-i18n="btn-read-more">
+                                    Read More <span class="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-[60%] relative z-10 flex justify-end">
+                            <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                                <img id="asset_about_img" src="https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/support-umkm.jpg" alt="Ilustrasi up2digital mendukung UMKM Indonesia" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-24 bg-up2dark text-white relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60 z-0 pointer-events-none"></div>
+                <div class="container mx-auto px-6 max-w-7xl relative z-10">
+                    <div class="flex flex-col md:flex-row items-stretch">
+                        <div class="w-full md:w-1/2 relative min-h-[500px] flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 bg-up2dark z-0"></div>
+                            <!-- PENGGUNAAN TAUTAN JPEG YANG SUDAH DIPERBAIKI -->
+                            <img id="asset_founder" src="https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/founder-up2digital.jpeg" alt="Founder up2digital" class="w-full h-full object-cover relative z-10 founder-blend-mask" style="object-position: center 20%;">
+                        </div>
+                        <div class="w-full md:w-1/2 flex flex-col justify-between py-10 lg:pl-10">
+                            <div>
+                                <h2 class="text-xs font-bold tracking-widest text-up2accent uppercase mb-2" data-i18n="founder-tag">Pesan Founder</h2>
+                                <h3 id="copy_founder_quote" class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 leading-tight" data-i18n="founder-quote">"Teknologi Seharusnya Memberdayakan, Bukan Membingungkan."</h3>
+                                <div class="space-y-6 text-gray-300 font-light text-lg leading-relaxed">
+                                    <p data-i18n="founder-p1">Selamat datang di up2digital Ecosystem.</p>
+                                    <p data-i18n="founder-p2">Ketika kami memulai perjalanan ini, kami melihat sebuah kesenjangan besar. Banyak UMKM dan kreator lokal memiliki produk luar biasa, namun terhambat oleh infrastruktur digital yang terpecah-pecah dan mahal.</p>
+                                    <p data-i18n="founder-p3">Kami membangun up2digital bukan sekadar sebagai penyedia jasa, melainkan sebagai sebuah <em>support system</em> yang utuh. Kami ingin Anda fokus pada apa yang Anda lakukan terbaik—menciptakan produk dan melayani pelanggan—sementara ekosistem kami menangani teknologi, distribusi, dan inovasi visual di belakang layar.</p>
+                                </div>
+                            </div>
+                            <div class="mt-12 pt-6 border-t border-white/10">
+                                <p class="text-gray-300 font-light text-lg italic mb-6" data-i18n="founder-quote2">"Mari bertumbuh bersama, karena kesuksesan Anda adalah validasi tertinggi bagi ekosistem yang kami bangun."</p>
+                                <p class="font-bold text-white text-xl">Bams</p>
+                                <p class="text-up2accent text-sm font-medium">Founder & Architect, up2digital</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ACCORDION: Komitmen Kami -->
+            <div class="w-full bg-[#090e17]">
+                <div class="accordion-header flex justify-between items-center py-6 px-6 md:px-12 lg:px-20 text-white font-bold text-2xl md:text-3xl tracking-tight" onclick="toggleAccordion('content-komitmen', 'icon-komitmen')">
+                    <span data-i18n="commit-title">Komitmen Kami</span>
+                    <svg id="icon-komitmen" class="accordion-icon w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="content-komitmen" class="accordion-content bg-slate-900/90 text-white">
+                    <section class="py-24 relative overflow-hidden">
+                        <img id="asset_commit_bg" src="https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/ilustrasi_komitmen-kami.jpg" onerror="this.onerror=null; this.src='https://placehold.co/1920x800/0f172a/ffffff?text=Background';" alt="Komitmen Kami Background" class="absolute inset-0 w-full h-full object-cover opacity-30 z-0 mix-blend-overlay">
+                        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/90 via-slate-900/70 to-slate-900/90 z-0"></div>
+                        <div class="container mx-auto px-6 max-w-7xl relative z-10">
+                            <div class="text-center mb-16">
+                                <p class="text-xs font-bold tracking-widest text-up2accent uppercase mb-2" data-i18n="commit-tag">Pilar Kepercayaan</p>
+                                <p class="text-gray-400 text-lg max-w-2xl mx-auto mt-4" data-i18n="commit-sub">Prinsip utama yang melandasi setiap teknologi, layanan, dan produk dalam ekosistem up2digital.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+                                <div class="bg-slate-800/60 p-8 rounded-3xl border border-white/10 hover:border-up2accent/50 transition-all duration-300 group hover:-translate-y-2 shadow-xl backdrop-blur-sm">
+                                    <div class="w-14 h-14 bg-sky-500/10 text-up2accent rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    </div>
+                                    <h3 class="text-2xl font-bold mb-3 text-white" data-i18n="commit-c1-title">Pemberdayaan UMKM</h3>
+                                    <p class="text-gray-300 leading-relaxed font-light text-base" data-i18n="commit-c1-desc">Menyediakan alat digital terjangkau dan mudah digunakan tanpa kerumitan teknis. Kami mendemokratisasi teknologi agar bisnis dari skala kecil hingga menengah memiliki daya saing yang sejajar.</p>
+                                </div>
+                                <div class="bg-slate-800/60 p-8 rounded-3xl border border-white/10 hover:border-up2accent/50 transition-all duration-300 group hover:-translate-y-2 shadow-xl backdrop-blur-sm">
+                                    <div class="w-14 h-14 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h-4a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                                    </div>
+                                    <h3 class="text-2xl font-bold mb-3 text-white" data-i18n="commit-c2-title">Inovasi Berkelanjutan</h3>
+                                    <p class="text-gray-300 leading-relaxed font-light text-base" data-i18n="commit-c2-desc">Secara konsisten mengintegrasikan kecerdasan buatan (AI) dan arsitektur cloud modern ke dalam produk kami. Setiap pembaruan dirancang untuk meningkatkan efisiensi dan mengantisipasi tren masa depan.</p>
+                                </div>
+                                <div class="bg-slate-800/60 p-8 rounded-3xl border border-white/10 hover:border-up2accent/50 transition-all duration-300 group hover:-translate-y-2 shadow-xl backdrop-blur-sm">
+                                    <div class="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                    </div>
+                                    <h3 class="text-2xl font-bold mb-3 text-white" data-i18n="commit-c3-title">Keamanan & Transparansi</h3>
+                                    <p class="text-gray-300 leading-relaxed font-light text-base" data-i18n="commit-c3-desc">Menjaga privasi dan integritas data pengguna dengan standar tinggi. Kami berkomitmen pada transparansi layanan, ketersediaan sistem yang stabil, serta perlindungan privasi yang konsisten.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="w-full bg-[#090e17]">
+                <div class="accordion-header flex justify-between items-center py-6 px-6 md:px-12 lg:px-20 text-white font-bold text-2xl md:text-3xl tracking-tight" onclick="toggleAccordion('content-struktur', 'icon-struktur')">
+                    <span data-i18n="org-title">Struktur Grup Ekosistem</span>
+                    <svg id="icon-struktur" class="accordion-icon w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="content-struktur" class="accordion-content bg-[#090e17] text-white">
+                    <section class="py-24 border-t border-white/5">
+                        <div class="container mx-auto px-6 max-w-7xl">
+                            <div class="text-center mb-16">
+                                <p class="text-gray-400 text-lg max-w-2xl mx-auto" data-i18n="org-sub">Sinergi antar divisi memastikan setiap solusi terhubung dan saling memlengkapi.</p>
+                            </div>
+
+                            <div class="relative max-w-6xl mx-auto org-chart-wrapper flex flex-col items-center overflow-x-auto pb-10">
+                                <div class="org-node bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 shadow-xl mb-12 w-64 z-10 relative flex flex-col items-center">
+                                    <div class="flex items-center gap-2 mb-1 mt-1">
+                                        <img id="asset_logo_white_1" src="https://raw.githubusercontent.com/up2digi-app/up2digital/main/logo-white.png" alt="up2digital" class="h-8 object-contain mix-blend-screen" style="mix-blend-mode: screen; filter: brightness(1.2);">
+                                        <span class="font-bold text-xl tracking-tight">up2digital</span>
+                                    </div>
+                                    <div class="org-connector-v bg-gray-700 h-12"></div>
+                                </div>
+
+                                <div class="relative w-full min-w-[800px] h-px bg-gray-700 mb-12 flex justify-between">
+                                     <div class="absolute top-0 left-[5%] w-px h-12 bg-gray-700"></div><div class="absolute top-0 left-[27.5%] w-px h-12 bg-gray-700"></div><div class="absolute top-0 left-[50%] w-px h-12 bg-gray-700"></div><div class="absolute top-0 left-[72.5%] w-px h-12 bg-gray-700"></div><div class="absolute top-0 left-[95%] w-px h-12 bg-gray-700"></div>
+                                </div>
+                                
+                                <!-- FIXED GRADIENTS WITH data-gradient -->
+                                <div class="grid grid-cols-5 gap-4 md:gap-6 w-full min-w-[800px] mt-[-48px]">
+                                    <!-- Pillar 1: UP2Apps -->
+                                    <div class="flex flex-col h-full">
+                                        <div id="asset_node_apps" data-gradient="linear-gradient(to bottom, rgba(37,99,235,0.7), rgba(15,23,42,0.95))" class="org-node w-full h-full bg-blue-600 border-transparent overflow-hidden relative shadow-lg !rounded-3xl flex flex-col p-6 items-center" style="background-image: linear-gradient(to bottom, rgba(37,99,235,0.7), rgba(15,23,42,0.95)), url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/ilustrasi_up2app.jpg'); background-size: cover; background-position: center;">
+                                            <div class="relative z-10 mb-8 text-center">
+                                                <h4 class="font-bold text-xl text-white mb-1">UP2Apps</h4>
+                                                <p class="text-[10px] text-blue-100 uppercase tracking-wider font-bold">Tech & Dev</p>
+                                            </div>
+                                            <div class="relative z-10 w-full space-y-3 flex flex-col justify-start h-full pb-2">
+                                                <a href="https://webkit.up2digital.workers.dev/" target="_blank" rel="noopener noreferrer" class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-400/50 hover:bg-yellow-400 group border border-transparent hover:border-yellow-500 cursor-pointer">
+                                                    <span class="text-sm font-bold text-gray-900 group-hover:text-gray-900 transition-colors block">WebKit</span>
+                                                </a>
+                                                <a href="https://gasora.up2digital.workers.dev/" target="_blank" rel="noopener noreferrer" class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-400/50 hover:bg-yellow-400 group border border-transparent hover:border-yellow-500 cursor-pointer">
+                                                    <span class="text-sm font-bold text-gray-900 group-hover:text-gray-900 transition-colors block">GASORA</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Pillar 2: UP2Commerce -->
+                                    <div class="flex flex-col h-full">
+                                        <div id="asset_node_commerce" data-gradient="linear-gradient(to bottom, rgba(16,185,129,0.7), rgba(15,23,42,0.95))" class="org-node w-full h-full bg-emerald-500 border-transparent overflow-hidden relative shadow-lg !rounded-3xl flex flex-col p-6 items-center" style="background-image: linear-gradient(to bottom, rgba(16,185,129,0.7), rgba(15,23,42,0.95)), url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/ilustrasi_up2commerce.jpg'); background-size: cover; background-position: center;">
+                                            <div class="relative z-10 mb-8 text-center">
+                                                <h4 class="font-bold text-xl text-white mb-1">UP2Commerce</h4>
+                                                <p class="text-[10px] text-emerald-100 uppercase tracking-wider font-bold">Retail & Market</p>
+                                            </div>
+                                            <div class="relative z-10 w-full space-y-3 flex flex-col justify-start h-full pb-2">
+                                                <div class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-500/50 hover:bg-red-500 group border border-transparent hover:border-red-600 cursor-pointer">
+                                                    <span class="text-sm font-bold text-gray-900 group-hover:text-white transition-colors block">UP2POS</span>
+                                                </div>
+                                                <div class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-500/50 hover:bg-red-500 group border border-transparent hover:border-red-600 cursor-pointer">
+                                                    <span class="text-sm font-bold text-gray-900 group-hover:text-white transition-colors block">Blanjaan</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Pillar 3: UP2Media -->
+                                    <div class="flex flex-col h-full">
+                                        <div id="asset_node_media" data-gradient="linear-gradient(to bottom, rgba(220,38,38,0.7), rgba(15,23,42,0.95))" class="org-node w-full h-full bg-red-600 border-transparent overflow-hidden relative shadow-lg !rounded-3xl flex flex-col p-6 items-center" style="background-image: linear-gradient(to bottom, rgba(220,38,38,0.7), rgba(15,23,42,0.95)), url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/ilustrasi_up2media.jpg'); background-size: cover; background-position: center;">
+                                            <div class="relative z-10 mb-8 text-center">
+                                                <h4 class="font-bold text-xl text-white mb-1">UP2Media</h4>
+                                                <p class="text-[10px] text-red-100 uppercase tracking-wider font-bold">Network & Content</p>
+                                            </div>
+                                            <div class="relative z-10 w-full space-y-3 flex flex-col justify-start h-full pb-2">
+                                                <a href="https://www.youtube.com/@JajamanOfficial" target="_blank" rel="noopener noreferrer" class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-400/50 hover:bg-cyan-400 group border border-transparent hover:border-cyan-500 cursor-pointer">
+                                                    <span class="font-bold text-sm text-gray-900 group-hover:text-gray-900 transition-colors block">Jajaman</span>
+                                                    <span class="text-[10px] text-gray-500 group-hover:text-gray-700 mt-1 uppercase tracking-wide block transition-colors">YouTube</span>
+                                                </a>
+                                                <div class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-400/50 hover:bg-cyan-400 group border border-transparent hover:border-cyan-500 cursor-pointer">
+                                                    <span class="font-bold text-sm text-gray-900 group-hover:text-gray-900 transition-colors block mb-1">Social Media</span>
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <a href="https://www.instagram.com/up2.media" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-gray-500 group-hover:text-gray-800 hover:text-white transition-colors relative z-20">IG</a>
+                                                        <span class="text-gray-300 group-hover:text-gray-600 text-[10px]">&</span>
+                                                        <a href="https://www.tiktok.com/@up2.media" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-gray-500 group-hover:text-gray-800 hover:text-white transition-colors relative z-20">TikTok</a>
+                                                    </div>
+                                                </div>
+                                                <a href="https://kulineriadigital.blogspot.com/" target="_blank" rel="noopener noreferrer" class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-400/50 hover:bg-cyan-400 group border border-transparent hover:border-cyan-500 cursor-pointer">
+                                                    <span class="font-bold text-sm text-gray-900 group-hover:text-gray-900 transition-colors block">Kulineria Digital</span>
+                                                    <span class="text-[10px] text-gray-500 group-hover:text-gray-700 mt-1 block transition-colors">Blog (Berita & AI)</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Pillar 4: UP2Studio -->
+                                    <div class="flex flex-col h-full">
+                                        <div id="asset_node_studio" data-gradient="linear-gradient(to bottom, rgba(147,51,234,0.7), rgba(15,23,42,0.95))" class="org-node w-full h-full bg-purple-600 border-transparent overflow-hidden relative shadow-lg !rounded-3xl flex flex-col p-6 items-center" style="background-image: linear-gradient(to bottom, rgba(147,51,234,0.7), rgba(15,23,42,0.95)), url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/ilustrasi_up2studio.jpg'); background-size: cover; background-position: center;">
+                                            <div class="relative z-10 mb-8 text-center">
+                                                <h4 class="font-bold text-xl text-white mb-1">UP2Studio</h4>
+                                                <p class="text-[10px] text-purple-100 uppercase tracking-wider font-bold">Creative & AI</p>
+                                            </div>
+                                            <div class="relative z-10 w-full space-y-3 flex flex-col justify-start h-full pb-2">
+                                                <div class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-lime-400/50 hover:bg-lime-400 group border border-transparent hover:border-lime-500 cursor-pointer">
+                                                    <span class="text-sm font-bold text-gray-900 group-hover:text-gray-900 transition-colors block">UP2Design AI</span>
+                                                </div>
+                                                <div class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-lime-400/50 hover:bg-lime-400 group border border-transparent hover:border-lime-500 cursor-pointer">
+                                                    <span class="text-sm font-bold text-gray-900 group-hover:text-gray-900 transition-colors block">Video Promosi</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Pillar 5: UP2Edu -->
+                                    <div class="flex flex-col h-full">
+                                        <div id="asset_node_edu" data-gradient="linear-gradient(to bottom, rgba(249,115,22,0.7), rgba(15,23,42,0.95))" class="org-node w-full h-full bg-orange-500 border-transparent overflow-hidden relative shadow-lg !rounded-3xl flex flex-col p-6 items-center" style="background-image: linear-gradient(to bottom, rgba(249,115,22,0.7), rgba(15,23,42,0.95)), url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/ilustrasi_up2edu.jpg'); background-size: cover; background-position: center;">
+                                            <div class="relative z-10 mb-8 text-center">
+                                                <h4 class="font-bold text-xl text-white mb-1">UP2Edu</h4>
+                                                <p class="text-[10px] text-orange-100 uppercase tracking-wider font-bold">Learning</p>
+                                            </div>
+                                            <div class="relative z-10 w-full space-y-3 flex flex-col justify-start h-full pb-2">
+                                                <div class="block bg-white p-3 rounded-xl text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-800/50 hover:bg-indigo-800 group border border-transparent hover:border-indigo-900 cursor-pointer">
+                                                    <span class="text-sm font-bold text-gray-900 group-hover:text-white transition-colors block">Academy</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-products" class="view-page">
+            <section class="w-full bg-up2dark border-b border-white/10 pt-20 md:pt-24">
+                <div class="split-container">
+                    <div id="asset_prod_gasora" class="split-panel" style="background-image: url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/landingpage-gasora.jpg');">
+                        <div class="split-overlay"></div>
+                        <div class="split-content">
+                            <p class="text-xs font-bold tracking-widest text-up2accent uppercase mb-2">Technology</p>
+                            <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight" id="prod_gasora_title">GASORA</h2>
+                            <p class="text-gray-300 text-lg split-desc" id="prod_gasora_desc" data-i18n="prod-gas-p">Infrastruktur aplikasi bisnis cerdas yang mengoptimalkan operasional dan manajemen data.</p>
+                            <div class="split-btn mt-4">
+                                <a id="prod_gasora_btn" href="https://gasora.up2digital.workers.dev/" target="_blank" rel="noopener noreferrer" class="px-8 py-3 bg-white text-up2dark rounded-full font-semibold inline-block hover:bg-gray-200 transition-colors" data-i18n="btn-selengkapnya">Selengkapnya</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="asset_prod_webkit" class="split-panel" style="background-image: url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/landingpage-webkit.jpg');">
+                        <div class="split-overlay"></div>
+                        <div class="split-content">
+                            <p class="text-xs font-bold tracking-widest text-up2accent uppercase mb-2">Technology</p>
+                            <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight" id="prod_webkit_title">WebKit</h2>
+                            <p class="text-gray-300 text-lg split-desc" id="prod_webkit_desc" data-i18n="prod-web-p">Solusi website, landing page, dan infrastruktur digital premium untuk skala bisnis apapun.</p>
+                            <div class="split-btn mt-4">
+                                <a id="prod_webkit_btn" href="https://webkit.up2digital.workers.dev/" target="_blank" rel="noopener noreferrer" class="px-8 py-3 bg-white text-up2dark rounded-full font-semibold inline-block hover:bg-gray-200 transition-colors" data-i18n="btn-selengkapnya">Selengkapnya</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="w-full bg-up2dark border-b border-white/10">
+                <div class="split-container flex-col md:flex-row h-auto md:h-[60vh] min-h-[400px]">
+                    <div id="asset_prod_blanjaan" class="split-panel w-full md:w-1/3 border-b md:border-b-0 md:border-r border-white/10" style="background-image: url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/landingpage-blanjaan.jpg');">
+                        <div class="split-overlay" style="background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.5) 70%, rgba(15,23,42,0.2) 100%);"></div>
+                        <div class="split-content">
+                            <p class="text-xs font-bold tracking-widest text-green-400 uppercase mb-2">Commerce</p>
+                            <h2 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight" id="prod_blanjaan_title">Blanjaan</h2>
+                            <p class="text-gray-300 text-base split-desc" id="prod_blanjaan_desc" data-i18n="prod-bla-p">Digital marketplace yang menghubungkan UMKM lokal langsung dengan pembeli setia mereka.</p>
+                            <div class="split-btn mt-4">
+                                <a id="prod_blanjaan_btn" href="#" onclick="openModal('Blanjaan', 'Platform Blanjaan sedang dipersiapkan untuk peluncuran publik.', 'Mengerti')" class="px-6 py-2.5 bg-white/10 border border-white/30 text-white rounded-full font-semibold inline-block hover:bg-white/20 transition-colors backdrop-blur-sm text-sm" data-i18n="btn-coming-soon">Coming Soon</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="asset_prod_heritaku" class="split-panel w-full md:w-1/3 border-b md:border-b-0 md:border-r border-white/10" style="background-image: url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/landingpage-heritaku.jpg');">
+                        <div class="split-overlay" style="background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.5) 70%, rgba(15,23,42,0.2) 100%);"></div>
+                        <div class="split-content">
+                            <p class="text-xs font-bold tracking-widest text-yellow-400 uppercase mb-2">Family & Heritage</p>
+                            <h2 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight" id="prod_heritaku_title">HeritaKu</h2>
+                            <p class="text-gray-300 text-base split-desc" id="prod_heritaku_desc" data-i18n="prod-her-p">Preserve stories. Build family history. Pass it forward secara digital untuk generasi masa depan.</p>
+                            <div class="split-btn mt-4">
+                                <a id="prod_heritaku_btn" href="javascript:void(0)" onclick="openModal('HeritaKu', 'Landing page HeritaKu akan segera tersedia.', 'Mengerti')" class="px-6 py-2.5 bg-white/10 border border-white/30 text-white rounded-full font-semibold inline-block hover:bg-white/20 transition-colors backdrop-blur-sm text-sm" data-i18n="btn-coming-soon">Coming Soon</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="asset_prod_designai" class="split-panel w-full md:w-1/3" style="background-image: url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/landingpage-designai.jpg');">
+                        <div class="split-overlay" style="background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.5) 70%, rgba(15,23,42,0.2) 100%);"></div>
+                        <div class="split-content">
+                            <p class="text-xs font-bold tracking-widest text-purple-400 uppercase mb-2">Creative & AI</p>
+                            <h2 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight" id="prod_up2designai_title">UP2Design AI</h2>
+                            <p class="text-gray-300 text-base split-desc" id="prod_up2designai_desc" data-i18n="prod-up2-p">Solusi desain berbasis kecerdasan buatan untuk mempercepat proses kreatif bisnis modern.</p>
+                            <div class="split-btn mt-4">
+                                <a id="prod_up2designai_btn" href="javascript:void(0)" onclick="openModal('UP2Design AI', 'Layanan UP2Design AI sedang dipersiapkan.', 'Mengerti')" class="px-6 py-2.5 bg-white/10 border border-white/30 text-white rounded-full font-semibold inline-block hover:bg-white/20 transition-colors backdrop-blur-sm text-sm" data-i18n="btn-coming-soon">Coming Soon</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXTRA DYNAMIC PRODUCTS SECTION (HYBRID LAYOUT BARIS 3++) -->
+            <section id="extra-products-section" class="w-full bg-[#0b1120] border-b border-white/10 py-20 hidden">
+                <div class="container mx-auto px-6 max-w-7xl">
+                    <div class="text-center mb-16">
+                        <p class="text-xs font-bold tracking-widest text-up2accent uppercase mb-2">Ekosistem Tambahan</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">Solusi Ekstra Kami</h2>
+                    </div>
+                    <div id="extra-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Dynamic Grid Cards akan muncul di sini via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Digital Store Banner -->
+            <section class="w-full bg-slate-900 border-b border-white/10 py-24 relative overflow-hidden flex items-center justify-center min-h-[400px]">
+                <div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity" style="background-image: url('https://placehold.co/1920x600/1e293b/0ea5e9?text=Ghibli+Style+Digital+Store+Illustration');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/40 z-0"></div>
+                
+                <div class="relative z-10 container mx-auto px-6 max-w-4xl text-center flex flex-col items-center">
+                    <span class="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/40 rounded-full text-emerald-400 text-xs font-bold uppercase tracking-widest inline-block mb-6" data-i18n="store-badge">Digital Assets Ready to Use</span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight" data-i18n="store-title">Beli Produk Digital Siap Pakai Kami</h2>
+                    <p class="text-lg text-gray-300 mb-10 max-w-2xl font-light" data-i18n="store-desc">Tingkatkan produktivitas Anda dengan koleksi aset digital premium, template, dan alat bantu cerdas yang tersedia langsung di toko resmi kami.</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
+                        <a href="https://up2digitalstore.gumroad.com/" target="_blank" rel="noopener noreferrer" class="px-8 py-4 bg-white text-slate-900 font-bold rounded-full transition-all duration-300 shadow-sm hover:bg-sky-400 hover:text-white hover:shadow-[0_0_15px_rgba(56,189,248,0.5)] group flex items-center justify-center gap-2" data-i18n="store-btn-gumroad">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18.36 5.64c-1.4-1.4-3.56-2.07-5.83-1.84-2.26.23-4.22 1.4-5.36 3.19C6.03 8.78 6 10.74 6.8 12.43c.8 1.69 2.3 2.92 4.1 3.36 1.8.44 3.73-.08 5.25-1.42 1.52-1.34 2.4-3.26 2.4-5.26 0-1.34-.53-2.6-1.5-3.55zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zm-3.5 7.5h7v2h-7v-2z"/></svg>
+                            <span data-i18n="store-btn-gumroad-text">Beli via Gumroad</span>
+                        </a>
+                        <a href="https://lynk.id/up2digital" target="_blank" rel="noopener noreferrer" class="px-8 py-4 bg-white text-slate-900 font-bold rounded-full transition-all duration-300 shadow-sm hover:bg-sky-400 hover:text-white hover:shadow-[0_0_15px_rgba(56,189,248,0.5)] group flex items-center justify-center gap-2" data-i18n="store-btn-lynk">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            <span data-i18n="store-btn-lynk-text">Beli via Lynk.id</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="view-news" class="view-page">
+            <section class="relative pt-32 pb-20 md:pt-40 md:pb-24 bg-up2dark text-white overflow-hidden flex items-center">
+                <img id="asset_news_hero" src="https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/heropage_ruang-berita-01.jpg" alt="Newsroom Hero" class="fullscreen-bg opacity-70 object-cover">
+                <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.5) 50%, rgba(0,0,0,0.6) 100%);"></div>
+                <div class="relative z-10 container mx-auto px-6 max-w-6xl">
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tighter drop-shadow-lg" data-i18n="news-view-title">Ruang Berita & Media</h1>
+                    <p class="text-lg md:text-2xl text-gray-300 font-light max-w-3xl drop-shadow-md" data-i18n="news-view-sub">Update terbaru, wawasan industri SEO & AI, serta galeri tayangan dari jaringan UP2Media.</p>
+                </div>
+            </section>
+
+            <section class="bg-slate-900 border-b border-white/10 sticky top-[72px] z-40 backdrop-blur-md">
+                <div class="container mx-auto px-6 max-w-6xl flex items-center gap-3 overflow-x-auto py-4">
+                    <button onclick="filterNewsCategory('all')" id="tab-news-all" class="px-5 py-2 rounded-full text-sm font-semibold transition-all bg-up2accent text-white shadow-md" data-i18n="news-tab-all">Semua Konten</button>
+                    <button onclick="filterNewsCategory('articles')" id="tab-news-articles" class="px-5 py-2 rounded-full text-sm font-semibold transition-all bg-white/10 text-gray-300 hover:bg-white/20" data-i18n="news-tab-seo">Berita & Artikel SEO</button>
+                    <button onclick="filterNewsCategory('media')" id="tab-news-media" class="px-5 py-2 rounded-full text-sm font-semibold transition-all bg-white/10 text-gray-300 hover:bg-white/20 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                        <span data-i18n="news-tab-media">UP2Media & Jajaman</span>
+                    </button>
+                </div>
+            </section>
+            
+            <!-- SOCIAL MEDIA LINKS (DINAMIS) -->
+            <section class="bg-white border-b border-gray-200 py-5">
+                <div class="container mx-auto px-6 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="text-up2dark font-bold flex items-center gap-2">
+                        <svg class="w-5 h-5 text-up2accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        <span data-i18n="news-network">Jejaring UP2Media:</span>
+                    </div>
+                    <div class="flex flex-wrap justify-center items-center gap-3">
+                        <a id="copy_link_ig" href="https://www.instagram.com/up2.media" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full hover:shadow-lg transition-all hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            Instagram
+                        </a>
+                        <a id="copy_link_tiktok" href="https://www.tiktok.com/@up2.media" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 bg-black text-white text-xs font-bold rounded-full hover:shadow-lg transition-all hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                            TikTok
+                        </a>
+                        <a id="copy_link_fb" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 bg-[#1877F2] text-white text-xs font-bold rounded-full hover:shadow-lg transition-all hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/></svg>
+                            Facebook
+                        </a>
+                        <a id="copy_link_x" href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 bg-black text-white text-xs font-bold rounded-full hover:shadow-lg transition-all hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            X (Twitter)
+                        </a>
+                        <a id="copy_link_threads" href="https://www.threads.com/@up2.media" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 bg-black text-white text-xs font-bold rounded-full hover:shadow-lg transition-all hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8c1.884 0 3.633.655 5 1.747v2.164a6.002 6.002 0 0 0-5-1.911c-3.309 0-6 2.691-6 6s2.691 6 6 6c1.173 0 2.259-.344 3.167-.932a3.99 3.99 0 0 1-1.34-3.15c0-2.206 1.794-4 4-4s4 1.794 4 4c0 1.258-.588 2.378-1.503 3.109C15.894 18.789 14.053 20 12 20zm5.174-8.082a2 2 0 1 0-2.828-2.828 2 2 0 0 0 2.828 2.828z"/></svg>
+                            Threads
+                        </a>
+                        <a id="copy_link_blogger" href="https://kulineriadigital.blogspot.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white text-xs font-bold rounded-full hover:shadow-lg transition-all hover:-translate-y-0.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15M9 11l3 3L22 4"/></svg>
+                            Blog Kulineria
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="py-16 bg-up2light min-h-[50vh]">
+                <div class="container mx-auto px-6 max-w-6xl">
+
+                    <div id="media-showcase-section" class="mb-20">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b border-gray-200 pb-4 gap-4">
+                            <div>
+                                <span class="text-xs font-bold tracking-widest text-red-500 uppercase" data-i18n="news-showcase-badge">UP2Media Showcase</span>
+                                <h2 class="text-3xl font-bold text-up2dark mt-1" data-i18n="news-showcase-title">Tayangan Kuliner & Konten Jajaman</h2>
+                                <p class="text-up2gray text-sm mt-1 mb-4" data-i18n="news-showcase-sub">Mempromosikan UMKM F&B dan cerita rasa Nusantara ke jutaan penonton.</p>
+                            </div>
+                            <a id="copy_link_yt" href="https://www.youtube.com/@JajamanOfficial" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-bold flex items-center gap-2 transition-all shadow-md">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                <span data-i18n="news-btn-subscribe">Subscribe @Jajaman</span>
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="dynamic-videos-grid"></div>
+                        
+                        <div class="mt-8 flex justify-center">
+                            <a href="https://www.youtube.com/@JajamanOfficial" target="_blank" rel="noopener noreferrer" class="px-8 py-3.5 bg-white border border-gray-200 text-up2dark rounded-full font-semibold hover:bg-up2accent hover:border-up2accent hover:text-white transition-all shadow-sm flex items-center gap-2 text-sm">
+                                <span data-i18n="news-btn-more-vid">Tonton Video Lainnya di YouTube Jajaman</span> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div id="articles-showcase-section" class="mb-10">
+                        <div class="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
+                            <div>
+                                <span class="text-xs font-bold tracking-widest text-up2accent uppercase" data-i18n="news-art-badge">Publikasi Strategis</span>
+                                <h2 class="text-3xl font-bold text-up2dark mt-1" data-i18n="news-art-title">Jurnal Kreatif up2digital</h2>
+                                <p class="text-up2gray text-sm mt-1 max-w-2xl" data-i18n="news-art-desc">Temukan wawasan terbaru seputar solusi teknologi digital kami dan eksplorasi dunia kuliner Nusantara.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="dynamic-articles-grid">
+                            <div class="text-center w-full col-span-1 md:col-span-2 py-10"><div class="spinner border-up2accent border-t-transparent"></div> Memuat berita terkini...</div>
+                        </div>
+                        
+                        <div class="mt-10 flex justify-center">
+                            <a href="https://kulineriadigital.blogspot.com/" target="_blank" rel="noopener noreferrer" class="px-8 py-3.5 bg-white border border-gray-200 text-up2dark rounded-full font-semibold hover:bg-up2accent hover:border-up2accent hover:text-white transition-all shadow-sm flex items-center gap-2 text-sm">
+                                <span data-i18n="news-btn-more-art">Baca Artikel Lainnya di Kulineria Digital</span> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <div id="view-article-detail" class="view-page">
+            <section class="pt-28 pb-12 bg-up2dark text-white border-b border-white/10">
+                <div class="container mx-auto px-6 max-w-4xl">
+                    <button onclick="closeFullArticle()" class="inline-flex items-center text-sm font-semibold text-up2accent hover:text-sky-300 transition-colors mb-6">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg> <span data-i18n="art-back">Kembali ke Ruang Berita</span>
+                    </button>
+                    <div class="flex items-center gap-3 text-xs text-up2accent uppercase tracking-widest font-bold mb-3" id="art-category">
+                        Category
+                    </div>
+                    <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-6 text-white" id="art-title">
+                        Title
+                    </h1>
+                    <div class="flex items-center gap-4 text-sm text-gray-400 border-t border-white/10 pt-4">
+                        <span><span data-i18n="art-by">Oleh:</span> <strong class="text-white" id="art-author">Author</strong></span>
+                        <span>•</span>
+                        <span id="art-date">Date</span>
+                        <span id="art-readtime-dot" class="hidden">•</span>
+                        <span id="art-readtime"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-16 bg-white text-up2dark">
+                <div class="container mx-auto px-6 max-w-4xl">
+                    <div id="art-content" class="prose prose-lg max-w-none space-y-6 text-gray-700 leading-relaxed"></div>
+                    <div class="mt-16 pt-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="text-sm font-medium text-gray-500" data-i18n="art-share-desc">Bagikan artikel ini untuk mendukung literasi digital UMKM Indonesia.</div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="copyArticleUrl()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-up2dark text-xs font-bold rounded-full transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg><span data-i18n="art-copy">Salin Tautan</span>
+                            </button>
+                            <button onclick="closeFullArticle()" class="px-5 py-2 bg-up2accent text-white text-xs font-bold rounded-full hover:bg-sky-400 transition-colors" data-i18n="art-close">Tutup Pembaca</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="view-careers" class="view-page">
+            <section class="relative pt-32 pb-24 md:pt-48 md:pb-16 bg-up2dark text-white text-left overflow-hidden min-h-[60vh] flex items-end justify-start">
+                <img id="asset_career_hero" src="https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/heropage_karir.jpg" alt="Careers Hero" class="fullscreen-bg opacity-100 object-cover">
+                <div class="hero-overlay" style="background: linear-gradient(135deg, rgba(15,23,42,0.6) 0%, rgba(15,23,42,0.2) 50%, rgba(0,0,0,0.7) 100%);"></div>
+                
+                <div class="relative z-10 container mx-auto px-6 max-w-4xl ml-0 md:ml-12 lg:ml-20">
+                    <h1 class="text-5xl md:text-7xl font-bold mb-4 text-white tracking-tighter drop-shadow-lg" data-i18n="car-view-title">Bangun Masa Depan Bersama Kami.</h1>
+                    <p class="text-xl text-gray-200 font-light drop-shadow-md max-w-2xl" data-i18n="car-view-sub">Kami selalu mencari talenta cerdas yang bersemangat untuk memecahkan masalah melalui teknologi dan kreativitas.</p>
+                </div>
+            </section>
+            
+            <section class="py-8 bg-white border-b border-gray-200 shadow-sm relative z-20">
+                <div class="container mx-auto px-6 max-w-6xl">
+                    <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                        <div class="relative w-full md:w-1/2">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                            <!-- SEARCH FILTER INPUT -->
+                            <input type="text" id="car-search-input" oninput="renderCareersList()" placeholder="Cari Pekerjaan..." class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-300 rounded-full text-up2dark placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-up2accent/50 focus:border-up2accent transition-all text-sm font-medium">
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-1/2 justify-end">
+                            <div class="relative w-full sm:w-auto min-w-[200px]">
+                                <!-- DYNAMIC DEPT DROPDOWN -->
+                                <select id="filter-dept" onchange="renderCareersList()" class="w-full appearance-none bg-white border border-gray-300 text-up2dark py-3.5 pl-5 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-up2accent/50 focus:border-up2accent cursor-pointer text-sm font-semibold transition-all hover:border-gray-400">
+                                    <option value="all" data-i18n="car-opt-dept">Semua Departemen</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                            
+                            <div class="relative w-full sm:w-auto min-w-[180px]">
+                                <!-- DYNAMIC LOC DROPDOWN -->
+                                <select id="filter-loc" onchange="renderCareersList()" class="w-full appearance-none bg-white border border-gray-300 text-up2dark py-3.5 pl-5 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-up2accent/50 focus:border-up2accent cursor-pointer text-sm font-semibold transition-all hover:border-gray-400">
+                                    <option value="all" data-i18n="car-opt-loc">Semua Lokasi</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-sm text-up2dark font-bold">
+                        <span class="text-up2dark" id="car-count" data-i18n="car-count">0 pekerjaan</span> <span class="text-gray-500 font-medium" data-i18n="car-avail">tersedia di semua departemen dan di semua lokasi</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-16 bg-up2light min-h-[30vh]">
+                <div class="container mx-auto px-6 max-w-4xl text-center">
+                    
+                    <div id="car-list-container" class="space-y-4 text-left hidden">
+                        <!-- Jobs injected here via Live API -->
+                    </div>
+
+                    <div id="car-empty-state" class="bg-white border border-dashed border-gray-300 rounded-3xl p-12 text-center shadow-sm">
+                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <h3 class="text-xl font-medium text-up2gray mb-2" data-i18n="car-empty-title">Belum ada posisi terbuka.</h3>
+                        <p class="text-gray-400 text-sm max-w-md mx-auto" data-i18n="car-none">Saat ini kami belum membuka rekrutmen baru. Pantau terus halaman ini atau media sosial kami untuk update selanjutnya.</p>
+                        <div id="car-loader" class="spinner border-up2accent border-t-transparent mt-4 hidden"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="view-contact" class="view-page">
+            <section class="relative pt-32 pb-8 md:pt-40 md:pb-12 bg-up2dark text-white overflow-hidden flex items-end justify-center min-h-[50vh]">
+                <video id="asset_contact_vid_player" class="fullscreen-bg opacity-80 object-cover" autoplay muted loop playsinline>
+                    <source id="asset_contact_vid" src="https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/heropage-hubungi-kami.mp4" type="video/mp4">
+                </video>
+                <div class="hero-overlay" style="background: linear-gradient(to bottom, rgba(15,23,42,0.6), rgba(15,23,42,0.2));"></div>
+                
+                <div class="relative z-10 container mx-auto px-6 max-w-6xl text-center flex justify-center pb-2">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-[2.8rem] font-bold tracking-tighter drop-shadow-lg lg:whitespace-nowrap" data-i18n="con-view-title">Mari Terhubung & Bertumbuh Bersama.</h1>
+                </div>
+            </section>
+
+            <section class="py-20 bg-slate-900 text-white border-t border-white/10">
+                <div class="container mx-auto px-6 max-w-7xl">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                        
+                        <div class="lg:col-span-7 bg-slate-800/80 p-8 md:p-12 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-md">
+                            <h2 class="text-2xl md:text-3xl font-bold mb-2 text-white" data-i18n="form-title">Kirimkan Pesan atau Inkuiri</h2>
+                            <p class="text-gray-400 text-sm mb-8" data-i18n="form-sub">Isi formulir di bawah ini dan konsultan digital kami akan menghubungi Anda dalam kurun waktu kurang dari 24 jam kerja.</p>
+
+                            <form id="contact-form" onsubmit="handleLiveContactSubmit(event)" class="space-y-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2" data-i18n="lbl-name">Nama Lengkap *</label>
+                                        <input type="text" required id="form-ph-name" placeholder="Contoh: Budi Santoso" class="w-full bg-slate-900 border border-white/15 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-up2accent transition-colors text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2" data-i18n="lbl-email">Email Bisnis *</label>
+                                        <input type="email" required id="form-ph-email" placeholder="budi@usaha.com" class="w-full bg-slate-900 border border-white/15 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-up2accent transition-colors text-sm">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2" data-i18n="lbl-phone">Nomor WhatsApp / HP *</label>
+                                        <input type="tel" required id="form-ph-phone" placeholder="08123456789" class="w-full bg-slate-900 border border-white/15 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-up2accent transition-colors text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2" data-i18n="lbl-topic">Topik / Layanan Kebutuhan</label>
+                                        <select id="form-ph-topic" class="w-full bg-slate-900 border border-white/15 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-up2accent transition-colors text-sm">
+                                            <option value="WebKit" data-i18n="opt-1">WebKit - Pembuatan Website & Landing Page</option>
+                                            <option value="GASORA" data-i18n="opt-2">GASORA - Kustom Aplikasi Bisnis</option>
+                                            <option value="UP2POS/Blanjaan" data-i18n="opt-3">UP2POS / Blanjaan - Retail & Commerce</option>
+                                            <option value="UP2Studio" data-i18n="opt-4">UP2Studio - Desain AI & Video Promosi</option>
+                                            <option value="UP2Media" data-i18n="opt-5">UP2Media / Jajaman - Kerjasama Media</option>
+                                            <option value="General" data-i18n="opt-6">Pertanyaan Umum / Kemitraan Lainnya</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2" data-i18n="lbl-msg">Pesan / Detail Kebutuhan *</label>
+                                    <textarea rows="4" required id="form-ph-msg" placeholder="Ceritakan singkat tentang bisnis Anda dan kendala atau kebutuhan digital yang ingin diselesaikan..." class="w-full bg-slate-900 border border-white/15 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-up2accent transition-colors text-sm resize-none"></textarea>
+                                </div>
+
+                                <div class="flex items-start gap-3 mt-4 mb-2">
+                                    <input type="checkbox" id="consent-check" required class="mt-1 w-5 h-5 rounded border-white/15 bg-slate-900 text-up2accent focus:ring-up2accent focus:ring-offset-slate-800 cursor-pointer">
+                                    <label for="consent-check" class="text-xs text-gray-400 leading-relaxed cursor-pointer" data-i18n="lbl-consent">Saya bersedia untuk mengungkapkan informasi identifikasi pribadi saya kepada up2digital dan afiliasinya untuk mengidentifikasi pesan yang saya sampaikan dan media untuk menindaklanjuti pesan saya.</label>
+                                </div>
+
+                                <button type="submit" id="btn-submit-contact" class="w-full py-4 bg-up2accent hover:bg-sky-400 text-white font-bold rounded-xl transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2">
+                                    <span data-i18n="btn-send-msg">Kirim Pesan Sekarang</span>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="lg:col-span-5 flex flex-col justify-start space-y-6">
+                            <div class="bg-slate-900 rounded-3xl p-8 md:p-12 border border-white/5 shadow-xl flex items-start justify-start relative overflow-hidden group">
+                                <div id="asset_contact_img" class="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-luminosity transition-transform duration-1000 group-hover:scale-105" style="background-image: url('https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/heropage_hubungi-kami-01.jpg');"></div>
+                                <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent z-0"></div>
+                                <h3 class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-200 to-gray-500 leading-tight tracking-tighter relative z-10" data-i18n="con-thankyou">
+                                    Terima kasih atas kepercayaan Anda<br>pada up2digital.
+                               </h3>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-emerald-950/60 to-slate-900 p-8 rounded-3xl border border-emerald-500/30 shadow-xl">
+                                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-4">
+                                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-white mb-2" data-i18n="con-wa-title">Konsultasi WhatsApp Langsung</h3>
+                                <p class="text-gray-300 text-sm mb-6 font-light" data-i18n="con-wa-desc">Respons lebih cepat untuk diskusi mendesak atau konsultasi paket produk WebKit & GASORA.</p>
+                                <a href="https://wa.me/6285885636588?text=Halo%20up2digital,%20saya%20ingin%20konsultasi%20layanan%20ekosistem." target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-full text-sm transition-colors shadow-lg" data-i18n="con-wa-btn">
+                                    Chat Via WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer id="global-footer" class="bg-up2dark py-12 relative z-50 border-t border-white/5">
+        <div class="container mx-auto px-6 max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <div class="hidden md:block order-2 md:order-1"></div>
+                <div class="flex items-center justify-center gap-3 order-1 md:order-2">
+                    <span class="text-gray-400 text-xs tracking-wide uppercase font-bold">Powered By</span>
+                    <img id="asset_logo_white_2" src="https://raw.githubusercontent.com/up2digi-app/up2digital/main/logo-white.png" alt="up2digital" class="h-10 object-contain mix-blend-screen" style="mix-blend-mode: screen; filter: brightness(1.2);">
+                    <span class="font-bold text-white text-3xl tracking-tight">up2digital</span>
+                </div>
+                <div class="flex flex-wrap justify-center md:justify-end items-center gap-3 text-[9px] font-medium order-3 md:order-3">
+                    <button onclick="openPrivacyModal()" class="text-white hover:text-gray-300 transition-colors" data-i18n="foot-privacy">Pemberitahuan Privasi</button>
+                    <span class="text-gray-600">|</span>
+                    <button onclick="openSitemapModal()" class="text-white hover:text-gray-300 transition-colors" data-i18n="foot-sitemap">Peta Situs</button>
+                    <span class="text-gray-600">|</span>
+                    <button onclick="openCookieModal()" class="text-white hover:text-gray-300 transition-colors" data-i18n="foot-cookie">Kelola Cookie</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="global-modal" class="fixed inset-0 bg-black/90 z-[100] hidden flex items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-10 max-w-lg w-full mx-6 transform scale-95 transition-transform duration-300" id="modal-content">
+            <h3 id="modal-title" class="text-3xl font-bold text-up2dark mb-4 tracking-tighter border-b border-gray-100 pb-4">Title</h3>
+            <div id="modal-message" class="text-base text-gray-600 mb-10 leading-relaxed max-h-[60vh] overflow-y-auto pr-2">Message.</div>
+            <div class="flex justify-end">
+                <button onclick="closeModal()" id="modal-btn" class="px-8 py-3 bg-up2dark text-white rounded-full font-semibold hover:bg-black transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- TRANSLATIONS ---
+        const translations = {
+            'nav-home': { id: 'Beranda', en: 'Home' },
+            'nav-about': { id: 'Tentang Kami', en: 'About Us' },
+            'nav-prod': { id: 'Produk', en: 'Products' },
+            'nav-news': { id: 'Ruang Berita', en: 'Newsroom' },
+            'nav-careers': { id: 'Karier', en: 'Careers' },
+            'nav-contact': { id: 'Hubungi Kami', en: 'Contact Us' },
+            'hero-tag': { id: 'Membangun Ekosistem Digital untuk Indonesia', en: 'Building the Digital Ecosystem for Indonesia' },
+            'eco-title-1': { id: 'UP2Digital', en: 'UP2Digital' },
+            'eco-title-2': { id: 'Satu Ekosistem, Banyak Peluang', en: 'One Ecosystem, Many Possibilities' },
+            'about-title': { id: 'Sekilas Tentang up2digital', en: 'About up2digital' },
+            'about-p1': { id: 'up2digital adalah ekosistem digital terintegrasi yang berdedikasi untuk memajukan UMKM dan ekonomi kreatif Indonesia. Misi kami adalah mendemokratisasi akses teknologi, memastikan setiap pelaku usaha memiliki infrastruktur dan solusi digital yang mereka butuhkan untuk bersaing dan berkembang.', en: 'up2digital is an integrated digital ecosystem dedicated to advancing Indonesian MSMEs and the creative economy. Our mission is to democratize access to technology, ensuring every business has the digital infrastructure and solutions they need to compete and grow.' },
+            'about-p2': { id: 'Dari penyediaan aplikasi kasir cerdas, platform e-commerce, pembuatan aset kreatif, hingga edukasi pemanfaatan AI, kami menyatukan berbagai layanan ke dalam satu ekosistem yang kohesif.', en: 'From smart POS applications, e-commerce platforms, creative asset production, to AI education, we unite various services into one cohesive ecosystem.' },
+            'btn-read-more': { id: 'Read More <span class="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>', en: 'Read More <span class="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>' },
+            'founder-tag': { id: 'Pesan Founder', en: 'Founder Message' },
+            'founder-quote': { id: '"Teknologi Seharusnya Memberdayakan, Bukan Membingungkan."', en: '"Technology Should Empower, Not Confuse."' },
+            'founder-p1': { id: 'Selamat datang di up2digital Ecosystem.', en: 'Welcome to the up2digital Ecosystem.' },
+            'founder-p2': { id: 'Ketika kami memulai perjalanan ini, kami melihat sebuah kesenjangan besar. Banyak UMKM dan kreator lokal memiliki produk luar biasa, namun terhambat oleh infrastruktur digital yang terpecah-pecah dan mahal.', en: 'When we started this journey, we saw a massive gap. Many local MSMEs and creators have incredible products, but are hindered by fragmented and expensive digital infrastructure.' },
+            'founder-p3': { id: 'Kami membangun up2digital bukan sekadar sebagai penyedia jasa, melainkan sebagai sebuah <em>support system</em> yang utuh. Kami ingin Anda fokus pada apa yang Anda lakukan terbaik—menciptakan produk dan melayani pelanggan—sementara ekosistem kami menangani teknologi, distribusi, dan inovasi visual di belakang layar.', en: 'We built up2digital not just as a service provider, but as a complete <em>support system</em>. We want you to focus on what you do best—creating products and serving customers—while our ecosystem handles the technology, distribution, and visual innovation behind the scenes.' },
+            'founder-quote2': { id: '"Mari bertumbuh bersama, karena kesuksesan Anda adalah validasi tertinggi bagi ekosistem yang kami bangun."', en: '"Let\'s grow together, because your success is the highest validation for the ecosystem we build."' },
+            'commit-tag': { id: 'Pilar Kepercayaan', en: 'Pillars of Trust' },
+            'commit-title': { id: 'Komitmen Kami', en: 'Our Commitments' },
+            'commit-sub': { id: 'Prinsip utama yang melandasi setiap teknologi, layanan, dan produk dalam ekosistem up2digital.', en: 'Core principles guiding every technology, service, and product in the up2digital ecosystem.' },
+            'commit-c1-title': { id: 'Pemberdayaan UMKM', en: 'MSME Empowerment' },
+            'commit-c1-desc': { id: 'Menyediakan alat digital terjangkau dan mudah digunakan tanpa kerumitan teknis. Kami mendemokratisasi teknologi agar bisnis dari skala kecil hingga menengah memiliki daya saing yang sejajar.', en: 'Providing affordable, user-friendly digital tools without technical complexity to democratize tech for MSMEs.' },
+            'commit-c2-title': { id: 'Inovasi Berkelanjutan', en: 'Sustainable Innovation' },
+            'commit-c2-desc': { id: 'Secara konsisten mengintegrasikan kecerdasan buatan (AI) dan arsitektur cloud modern ke dalam produk kami. Setiap pembaruan dirancang untuk meningkatkan efisiensi dan mengantisipasi tren masa depan.', en: 'Consistently integrating AI and modern cloud architecture into our products for peak efficiency.' },
+            'commit-c3-title': { id: 'Keamanan & Transparansi', en: 'Security & Transparency' },
+            'commit-c3-desc': { id: 'Menjaga privasi dan integritas data pengguna dengan standar tinggi. Kami berkomitmen pada transparansi layanan, ketersediaan sistem yang stabil, serta perlindungan privasi yang konsisten.', en: 'Maintaining user data privacy and integrity with high standards and operational transparency.' },
+            'org-title': { id: 'Struktur Grup Ekosistem', en: 'Ecosystem Group Structure' },
+            'org-sub': { id: 'Sinergi antar divisi memastikan setiap solusi terhubung dan saling memlengkapi.', en: 'Synergy between divisions ensures every solution is connected and complementary.' },
+            'prod-gas-p': { id: 'Infrastruktur aplikasi bisnis cerdas yang mengoptimalkan operasional dan manajemen data.', en: 'Smart business application infrastructure optimizing operations and data management.' },
+            'prod-web-p': { id: 'Solusi website, landing page, dan infrastruktur digital premium untuk skala bisnis apapun.', en: 'Website, landing page, and premium digital infrastructure solutions for any business scale.' },
+            'prod-bla-p': { id: 'Digital marketplace yang menghubungkan UMKM lokal langsung dengan pembeli setia mereka.', en: 'Digital marketplace connecting local MSMEs directly with their loyal buyers.' },
+            'prod-her-p': { id: 'Preserve stories. Build family history. Pass it forward secara digital untuk generasi masa depan.', en: 'Preserve stories. Build family history. Pass it forward digitally to future generations.' },
+            'prod-up2-p': { id: 'Solusi desain berbasis kecerdasan buatan untuk mempercepat proses kreatif bisnis modern.', en: 'AI-based design solutions to accelerate modern business creative processes.' },
+            'btn-selengkapnya': { id: 'Selengkapnya', en: 'Learn More' },
+            'btn-coming-soon': { id: 'Segera Hadir', en: 'Coming Soon' },
+            'store-badge': { id: 'Digital Assets Ready to Use', en: 'Digital Assets Ready to Use' },
+            'store-title': { id: 'Beli Produk Digital Siap Pakai Kami', en: 'Shop Our Ready-to-Use Digital Products' },
+            'store-desc': { id: 'Tingkatkan produktivitas Anda dengan koleksi aset digital premium, template, dan alat bantu cerdas yang tersedia langsung di toko resmi kami.', en: 'Boost your productivity with our collection of premium digital assets, templates, and smart tools available directly in our official store.' },
+            'store-btn-gumroad-text': { id: 'Beli via Gumroad', en: 'Buy on Gumroad' },
+            'store-btn-lynk-text': { id: 'Beli via Lynk.id', en: 'Buy on Lynk.id' },
+            'news-view-title': { id: 'Ruang Berita & Media', en: 'Newsroom & Media' },
+            'news-view-sub': { id: 'Update terbaru, wawasan industri SEO & AI, serta galeri tayangan dari jaringan UP2Media.', en: 'Latest updates, SEO & AI industry insights, and show galleries from UP2Media network.' },
+            'news-tab-all': { id: 'Semua Konten', en: 'All Content' },
+            'news-tab-seo': { id: 'Berita & Artikel SEO', en: 'News & SEO Articles' },
+            'news-tab-media': { id: 'UP2Media & Jajaman', en: 'UP2Media & Jajaman' },
+            'news-showcase-badge': { id: 'UP2Media Showcase', en: 'UP2Media Showcase' },
+            'news-showcase-title': { id: 'Tayangan Kuliner & Konten Jajaman', en: 'Culinary Shows & Jajaman Content' },
+            'news-showcase-sub': { id: 'Mempromosikan UMKM F&B dan cerita rasa Nusantara ke jutaan penonton.', en: 'Promoting F&B MSMEs and Indonesian flavors to millions of viewers.' },
+            'news-btn-subscribe': { id: 'Subscribe @Jajaman', en: 'Subscribe @Jajaman' },
+            'news-btn-more-vid': { id: 'Tonton Video Lainnya di YouTube Jajaman', en: 'Watch More Videos on YouTube Jajaman' },
+            'news-network': { id: 'Jejaring UP2Media:', en: 'UP2Media Network:' },
+            'news-art-badge': { id: 'Publikasi Strategis', en: 'Strategic Publications' },
+            'news-art-title': { id: 'Jurnal Kreatif up2digital', en: 'up2digital Creative Journal' },
+            'news-art-desc': { id: 'Temukan wawasan terbaru seputar solusi teknologi digital kami dan eksplorasi dunia kuliner Nusantara.', en: 'Discover the latest insights on our digital technology solutions and explore the culinary world of the archipelago.' },
+            'news-btn-more-art': { id: 'Baca Artikel Lainnya di Kulineria Digital', en: 'Read More Articles on Kulineria Digital' },
+            'dyn-latest-show': { id: 'Tayangan Terbaru', en: 'Latest Show' },
+            'dyn-watch-yt': { id: 'Tonton tayangan selengkapnya langsung di YouTube Jajaman.', en: 'Watch the full episode on Jajaman YouTube channel.' },
+            'car-view-title': { id: 'Bangun Masa Depan Bersama Kami.', en: 'Build the Future With Us.' },
+            'car-view-sub': { id: 'Kami selalu mencari talenta cerdas yang bersemangat untuk memecahkan masalah melalui teknologi dan kreativitas.', en: 'We are always looking for bright talents eager to solve problems through technology and creativity.' },
+            'car-search-ph': { id: 'Cari Pekerjaan...', en: 'Search Jobs...' },
+            'car-opt-dept': { id: 'Semua Departemen', en: 'All Departments' },
+            'car-opt-loc': { id: 'Semua Lokasi', en: 'All Locations' },
+            'car-count': { id: '0 pekerjaan', en: '0 jobs' },
+            'car-avail': { id: 'tersedia di semua departemen dan di semua lokasi', en: 'available across all departments and locations' },
+            'car-empty-title': { id: 'Belum ada posisi terbuka.', en: 'No open positions yet.' },
+            'car-none': { id: 'Saat ini kami belum membuka rekrutmen baru. Pantau terus halaman ini atau media sosial kami untuk update selanjutnya.', en: 'We do not have any open positions right now. Keep an eye on this page or our social media for future updates.' },
+            'con-view-title': { id: 'Mari Terhubung & Bertumbuh Bersama.', en: 'Let\'s Connect & Grow Together.' },
+            'form-title': { id: 'Kirimkan Pesan atau Inkuiri', en: 'Send an Inquiry or Message' },
+            'form-sub': { id: 'Isi formulir di bawah ini dan konsultan digital kami akan menghubungi Anda dalam kurun waktu kurang dari 24 jam kerja.', en: 'Fill in the form below and our digital consultant will reach out in under 24 business hours.' },
+            'lbl-name': { id: 'Nama Lengkap *', en: 'Full Name *' },
+            'form-ph-name': { id: 'Contoh: Budi Santoso', en: 'Example: John Doe' },
+            'lbl-email': { id: 'Email Bisnis *', en: 'Business Email *' },
+            'lbl-phone': { id: 'Nomor WhatsApp / HP *', en: 'WhatsApp Number *' },
+            'lbl-topic': { id: 'Topik / Layanan Kebutuhan', en: 'Topic / Service Needed' },
+            'opt-1': { id: 'WebKit - Pembuatan Website & Landing Page', en: 'WebKit - Website & Landing Page Creation' },
+            'opt-2': { id: 'GASORA - Kustom Aplikasi Bisnis', en: 'GASORA - Custom Business App' },
+            'opt-3': { id: 'UP2POS / Blanjaan - Retail & Commerce', en: 'UP2POS / Blanjaan - Retail & Commerce' },
+            'opt-4': { id: 'UP2Studio - Desain AI & Video Promosi', en: 'UP2Studio - AI Design & Promo Video' },
+            'opt-5': { id: 'UP2Media / Jajaman - Kerjasama Media', en: 'UP2Media / Jajaman - Media Partnership' },
+            'opt-6': { id: 'Pertanyaan Umum / Kemitraan Lainnya', en: 'General Inquiry / Other Partnerships' },
+            'lbl-msg': { id: 'Pesan / Detail Kebutuhan *', en: 'Message / Details *' },
+            'form-ph-msg': { id: 'Ceritakan singkat tentang bisnis Anda dan kendala atau kebutuhan digital yang ingin diselesaikan...', en: 'Briefly tell us about your business and the digital challenges or needs you want to solve...' },
+            'lbl-consent': { id: 'Saya bersedia untuk mengungkapkan informasi identifikasi pribadi saya kepada up2digital dan afiliasinya untuk mengidentifikasi pesan yang saya sampaikan dan media untuk menindaklanjuti pesan saya.', en: 'I consent to disclose my personally identifiable information to up2digital and its affiliates to identify the message I send and the medium to follow up on my message.' },
+            'btn-send-msg': { id: 'Kirim Pesan Sekarang', en: 'Send Message Now' },
+            'con-thankyou': { id: 'Terima kasih atas kepercayaan Anda pada up2digital.', en: 'Thank you for your trust in up2digital.' },
+            'con-wa-title': { id: 'Konsultasi WhatsApp Langsung', en: 'Direct WhatsApp Consultation' },
+            'con-wa-desc': { id: 'Respons lebih cepat untuk diskusi mendesak atau konsultasi paket produk WebKit & GASORA.', en: 'Faster response for urgent discussions or WebKit & GASORA product consultations.' },
+            'con-wa-btn': { id: 'Chat Via WhatsApp', en: 'Chat Via WhatsApp' },
+            'foot-privacy': { id: 'Pemberitahuan Privasi', en: 'Privacy Notice' },
+            'foot-sitemap': { id: 'Peta Situs', en: 'Sitemap' },
+            'foot-cookie': { id: 'Kelola Cookie', en: 'Manage Cookies' },
+            'art-back': { id: 'Kembali ke Ruang Berita', en: 'Back to Newsroom' },
+            'art-by': { id: 'Oleh:', en: 'By:' },
+            'art-share-desc': { id: 'Bagikan artikel ini untuk mendukung literasi digital UMKM Indonesia.', en: 'Share this article to support the digital literacy of Indonesian MSMEs.' },
+            'art-copy': { id: 'Salin Tautan', en: 'Copy Link' },
+            'art-close': { id: 'Tutup Pembaca', en: 'Close Reader' }
+        };
+
+        let currentLang = 'id';
+
+        function setLang(lang) {
+            currentLang = lang;
+            const btnId = document.getElementById('btn-lang-id');
+            const btnEn = document.getElementById('btn-lang-en');
+
+            if (btnId && btnEn) {
+                if(lang === 'id') {
+                    btnId.className = 'font-bold text-white transition-colors';
+                    btnEn.className = 'text-white/50 hover:text-white transition-colors';
+                } else {
+                    btnEn.className = 'font-bold text-white transition-colors';
+                    btnId.className = 'text-white/50 hover:text-white transition-colors';
+                }
+            }
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translations[key] && translations[key][lang]) el.innerHTML = translations[key][lang];
+            });
+            const searchInput = document.getElementById('car-search-input');
+            if (searchInput && translations['car-search-ph'] && translations['car-search-ph'][lang]) searchInput.placeholder = translations['car-search-ph'][lang];
+            const nameInput = document.getElementById('form-ph-name');
+            if (nameInput && translations['form-ph-name'] && translations['form-ph-name'][lang]) nameInput.placeholder = translations['form-ph-name'][lang];
+            const msgInput = document.getElementById('form-ph-msg');
+            if (msgInput && translations['form-ph-msg'] && translations['form-ph-msg'][lang]) msgInput.placeholder = translations['form-ph-msg'][lang];
+        }
+
+        // --- GLOBAL VARIABLES FOR API LIVE ---
+        const LIVE_GAS_URL = "https://script.google.com/macros/s/AKfycby0yyXyarnGUv5E74pW0r7emmWeuYl2Im5hn6T37hGkyU6j48JW8htPou3mAuaS81_24g/exec";
+        let dynamicArticleDatabase = {};
+        let globalActiveJobs = [];
+
+        // --- MAIN FETCHER (LIVE API) ---
+        async function fetchLiveContent() {
+            const loader = document.getElementById('car-loader');
+            if(loader) loader.classList.remove('hidden');
+
+            try {
+                const [assetsRes, copyRes, prodRes, careerRes, newsRes] = await Promise.allSettled([
+                    fetch(LIVE_GAS_URL + "?action=getAssets").then(r => r.json()),
+                    fetch(LIVE_GAS_URL + "?action=getCopywriting").then(r => r.json()),
+                    fetch(LIVE_GAS_URL + "?action=getProducts").then(r => r.json()),
+                    fetch(LIVE_GAS_URL + "?action=getCareers").then(r => r.json()),
+                    fetch(LIVE_GAS_URL + "?action=getNews").then(r => r.json())
+                ]);
+
+                // 1. ASSETS INJECTION (WITH GRADIENT PRESERVATION FIX)
+                if (assetsRes.status === 'fulfilled' && assetsRes.value.data) {
+                    assetsRes.value.data.forEach(asset => {
+                        const el = document.getElementById(asset.id);
+                        if (el) {
+                            if (asset.type === 'Image' || asset.id.includes('favicon') || asset.id.includes('logo')) {
+                                if(el.tagName === 'IMG' || el.tagName === 'LINK') {
+                                    el.src = asset.asset_url; el.href = asset.asset_url;
+                                } else { 
+                                    // Check if element has a data-gradient attribute to preserve structure colors
+                                    if(el.hasAttribute('data-gradient')) {
+                                        el.style.backgroundImage = `${el.getAttribute('data-gradient')}, url('${asset.asset_url}')`;
+                                    } else {
+                                        el.style.backgroundImage = `url('${asset.asset_url}')`; 
+                                    }
+                                }
+                            } else if (asset.type === 'Video' || asset.id.includes('vid')) {
+                                el.src = asset.asset_url;
+                                if(el.parentElement && el.parentElement.tagName === 'VIDEO') el.parentElement.load();
+                            }
+                        }
+                    });
+                }
+
+                // 2. COPYWRITING INJECTION
+                if (copyRes.status === 'fulfilled' && copyRes.value.data) {
+                    copyRes.value.data.forEach(copy => {
+                        const el = document.getElementById(copy.id);
+                        if (el) {
+                            if(el.tagName === 'A') { el.href = copy.text_content; } 
+                            else { el.textContent = copy.text_content; }
+                        }
+                    });
+                }
+
+                // 3. PRODUCTS INJECTION (HYBRID LAYOUT)
+                if (prodRes.status === 'fulfilled' && prodRes.value.data) {
+                    const products = prodRes.value.data;
+                    const top5Ids = ['prod_gasora', 'prod_webkit', 'prod_blanjaan', 'prod_heritaku', 'prod_up2designai'];
+                    let extraProducts = [];
+
+                    products.forEach(prod => {
+                        if (top5Ids.includes(prod.id)) {
+                            const titleEl = document.getElementById(prod.id + '_title');
+                            const descEl = document.getElementById(prod.id + '_desc');
+                            const btnEl = document.getElementById(prod.id + '_btn');
+                            
+                            if(titleEl) titleEl.textContent = prod.product_name;
+                            if(descEl) descEl.textContent = prod.description;
+                            if(btnEl) {
+                                btnEl.textContent = prod.link_text;
+                                if (prod.link_url !== '#' && prod.link_url !== '') {
+                                    btnEl.href = prod.link_url;
+                                    btnEl.removeAttribute('onclick');
+                                } else {
+                                    btnEl.href = "javascript:void(0)";
+                                    btnEl.setAttribute('onclick', `openModal('${prod.product_name}', 'Platform ini sedang dipersiapkan untuk peluncuran publik.', 'Mengerti')`);
+                                }
+                            }
+                        } else {
+                            extraProducts.push(prod);
+                        }
+                    });
+
+                    // Render dynamic extra products grid if more than 5 products exist
+                    if (extraProducts.length > 0) {
+                        const extraSec = document.getElementById('extra-products-section');
+                        const extraGrid = document.getElementById('extra-products-grid');
+                        if (extraSec && extraGrid) {
+                            extraSec.classList.remove('hidden');
+                            let html = '';
+                            extraProducts.forEach(prod => {
+                                let btnHtml = '';
+                                if (prod.link_url !== '#' && prod.link_url !== '') {
+                                    btnHtml = `<a href="${prod.link_url}" target="_blank" rel="noopener noreferrer" class="px-6 py-2 bg-up2accent text-white rounded-full font-semibold inline-block hover:bg-sky-400 transition-colors text-sm">${prod.link_text}</a>`;
+                                } else {
+                                    btnHtml = `<button onclick="openModal('${prod.product_name}', 'Platform ini sedang dipersiapkan untuk peluncuran publik.', 'Mengerti')" class="px-6 py-2 bg-gray-700 text-white rounded-full font-semibold inline-block hover:bg-gray-600 transition-colors text-sm">${prod.link_text}</button>`;
+                                }
+                                
+                                let imgHtml = prod.image_url ? `<img src="${prod.image_url}" class="w-full h-48 object-cover border-b border-white/10" alt="${prod.product_name}">` : '';
+
+                                html += `
+                                <div class="bg-slate-800 rounded-3xl border border-white/10 flex flex-col h-full shadow-xl hover:-translate-y-1 transition-transform overflow-hidden group">
+                                    ${imgHtml}
+                                    <div class="p-8 flex flex-col flex-grow">
+                                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-up2accent transition-colors">${prod.product_name}</h3>
+                                        <p class="text-gray-300 mb-6 flex-grow text-sm leading-relaxed">${prod.description}</p>
+                                        <div class="mt-auto">${btnHtml}</div>
+                                    </div>
+                                </div>`;
+                            });
+                            extraGrid.innerHTML = html;
+                        }
+                    }
+                }
+
+                // 4. CAREERS INJECTION (WITH DYNAMIC DROPDOWNS)
+                if (careerRes.status === 'fulfilled' && careerRes.value.data) {
+                    globalActiveJobs = careerRes.value.data.filter(job => job.status === 'Buka');
+                    
+                    const deptSet = new Set();
+                    const locSet = new Set();
+                    globalActiveJobs.forEach(job => {
+                        if(job.department) deptSet.add(job.department);
+                        if(job.location) locSet.add(job.location);
+                    });
+
+                    const deptSelect = document.getElementById('filter-dept');
+                    const locSelect = document.getElementById('filter-loc');
+                    
+                    if (deptSelect) {
+                        deptSelect.innerHTML = `<option value="all">Semua Departemen</option>` + 
+                            Array.from(deptSet).map(d => `<option value="${d}">${d}</option>`).join('');
+                    }
+                    if (locSelect) {
+                        locSelect.innerHTML = `<option value="all">Semua Lokasi</option>` + 
+                            Array.from(locSet).map(l => `<option value="${l}">${l}</option>`).join('');
+                    }
+
+                    renderCareersList(); // Call render function
+                }
+
+                // 5. NEWS INJECTION
+                if (newsRes.status === 'fulfilled' && newsRes.value.data && newsRes.value.data.length > 0) {
+                    renderDynamicArticlesFromLive(newsRes.value.data);
+                    fetchFallbackRSSVideosOnly(); // Get YT videos via RSS
+                } else {
+                    fetchFallbackRSS();
+                }
+
+            } catch (error) {
+                console.error("Gagal sinkronisasi Live API:", error);
+                fetchFallbackRSS();
+            } finally {
+                if(loader) loader.classList.add('hidden');
+            }
+        }
+
+        // --- CAREERS DYNAMIC FILTER LOGIC ---
+        function renderCareersList() {
+            const container = document.getElementById('car-list-container');
+            const emptyState = document.getElementById('car-empty-state');
+            const countEl = document.getElementById('car-count');
+            const searchInput = document.getElementById('car-search-input');
+            const deptSelect = document.getElementById('filter-dept');
+            const locSelect = document.getElementById('filter-loc');
+
+            if(!container) return;
+
+            const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
+            const deptVal = deptSelect ? deptSelect.value : 'all';
+            const locVal = locSelect ? locSelect.value : 'all';
+
+            const filteredJobs = globalActiveJobs.filter(job => {
+                const matchSearch = job.title.toLowerCase().includes(searchVal) || job.department.toLowerCase().includes(searchVal);
+                const matchDept = deptVal === 'all' || job.department === deptVal;
+                const matchLoc = locVal === 'all' || job.location === locVal;
+                return matchSearch && matchDept && matchLoc;
+            });
+
+            if (countEl) countEl.textContent = `${filteredJobs.length} pekerjaan`;
+
+            if(filteredJobs.length === 0) {
+                emptyState.style.display = 'block';
+                container.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                container.style.display = 'block';
+                let html = '';
+                filteredJobs.forEach(job => {
+                    html += `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center hover:border-up2accent transition-colors">
+                        <div>
+                            <h4 class="font-bold text-up2dark text-xl">${job.title}</h4>
+                            <div class="text-sm text-gray-500 mt-1 flex gap-3"><span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-semibold">${job.department}</span> <span><i class="ph ph-map-pin"></i> ${job.location}</span></div>
+                        </div>
+                        <button onclick="window.location.hash='#/contact'" class="mt-4 md:mt-0 px-6 py-2.5 bg-up2dark text-white text-sm font-bold rounded-full hover:bg-up2accent transition-colors shadow">Lamar via Kontak</button>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            }
+        }
+
+        // --- SUBMIT CONTACT WITH WA FORMATTING ---
+        async function handleLiveContactSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-contact');
+            const origText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<span class="flex items-center gap-2"><div class="spinner border-t-white border-white/30 h-4 w-4"></div> Mengirim...</span>`;
+
+            let phoneVal = document.getElementById('form-ph-phone').value.trim();
+            // UPGRADE: Auto-format 0 ke 62
+            if(phoneVal.startsWith('0')) {
+                phoneVal = '62' + phoneVal.substring(1);
+            }
+
+            const payload = {
+                name: document.getElementById('form-ph-name').value,
+                email: document.getElementById('form-ph-email').value,
+                phone: phoneVal,
+                topic: document.getElementById('form-ph-topic').value,
+                message: document.getElementById('form-ph-msg').value
+            };
+
+            try {
+                const res = await fetch(LIVE_GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' }, 
+                    body: JSON.stringify({ action: 'submitContact', payload: payload })
+                });
+                const json = await res.json();
+
+                if(json.status === 'success') {
+                    openModal('Pesan Terkirim!', 'Terima kasih telah menghubungi up2digital. Konsultan kami telah menerima pesan Anda dan akan segera menghubungi nomor WhatsApp/Email Anda.', 'Selesai');
+                    e.target.reset();
+                } else {
+                    throw new Error(json.message);
+                }
+            } catch(error) {
+                openModal('Gagal Mengirim', 'Koneksi ke server terganggu. Silakan coba beberapa saat lagi atau hubungi via WhatsApp langsung.', 'Tutup');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origText;
+            }
+        }
+
+        // --- NEWS RENDERERS ---
+        function renderDynamicArticlesFromLive(data) {
+            const grid = document.getElementById('dynamic-articles-grid');
+            if(!grid) return;
+            
+            let html = '';
+            data.forEach(item => {
+                const artKey = `dyn-art-${item.id}`;
+                let d = new Date(item.date);
+                let dateStr = isNaN(d) ? item.date : d.toLocaleDateString('id-ID', { year:'numeric', month:'long', day:'numeric' });
+
+                let authorName = item.author || 'Tim Publikasi';
+                // FIX FOR BLOGGER AUTHOR NAME
+                if (authorName.includes('noreply@blogger.com')) {
+                    authorName = 'Kulineria Digital';
+                }
+
+                dynamicArticleDatabase[artKey] = {
+                    category: item.category,
+                    title: item.title,
+                    author: authorName,
+                    date: dateStr,
+                    readtime: 'Bacaan Eksklusif',
+                    content: item.content
+                };
+
+                html += `
+                <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-row items-stretch h-32 sm:h-36 cursor-pointer" onclick="openFullArticle('${artKey}')">
+                    <div class="relative w-1/3 sm:w-2/5 bg-gray-200 overflow-hidden flex-shrink-0">
+                        <img src="${item.thumbnail}" alt="${item.title}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=News'">
+                    </div>
+                    <div class="p-4 sm:p-5 flex flex-col justify-center flex-grow overflow-hidden">
+                        <span class="text-[10px] font-bold text-up2accent uppercase tracking-wider mb-1 block truncate">${item.category}</span>
+                        <h3 class="text-sm sm:text-base font-bold text-up2dark mb-1 sm:mb-2 line-clamp-2 hover:text-up2accent transition-colors">${item.title}</h3>
+                        <div class="mt-auto flex items-center justify-between">
+                            <span class="text-[10px] text-gray-400 font-medium">${dateStr}</span>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        async function fetchFallbackRSSVideosOnly() {
+            try {
+                const ytChannelId = 'UC6BMGFyVEo3ashU49SPa7xg'; 
+                const ytUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${ytChannelId}`;
+                const ytApi = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(ytUrl)}`;
+                const resYt = await fetch(ytApi);
+                const dataYt = await resYt.json();
+                if (dataYt.status === 'ok' && dataYt.items && dataYt.items.length > 0) {
+                    renderDynamicVideos(dataYt.items);
+                }
+            } catch (e) {
+                console.log("No Youtube RSS.");
+            }
+        }
+
+        async function fetchFallbackRSS() {
+            const fallbackArticles = [
+                { title: "Membangun Fondasi Ekosistem Digital", pubDate: "2026-02-24 10:00:00", description: "Visi strategis up2digital dalam menyiapkan infrastruktur digital yang scalable.", content: "<p>Visi strategis...</p>" }
+            ];
+            try {
+                const blogUrl = 'https://kulineriadigital.blogspot.com/feeds/posts/default?alt=rss';
+                const blogApi = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(blogUrl)}`;
+                const resBlog = await fetch(blogApi);
+                const dataBlog = await resBlog.json();
+                if (dataBlog.status === 'ok' && dataBlog.items && dataBlog.items.length > 0) { renderDynamicArticles(dataBlog.items); } 
+                else { renderDynamicArticles(fallbackArticles); }
+            } catch (e) { renderDynamicArticles(fallbackArticles); }
+            fetchFallbackRSSVideosOnly();
+        }
+
+        function renderDynamicArticles(items) {
+            const gridContainer = document.getElementById('dynamic-articles-grid');
+            if(!gridContainer) return;
+            
+            let gridHtml = '';
+            items.slice(0, 6).forEach((item, index) => {
+                const dateObj = new Date(item.pubDate.replace(/-/g, '/'));
+                const dateStr = isNaN(dateObj) ? item.pubDate : dateObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+                let snippet = item.description ? item.description.replace(/<[^>]*>?/gm, '') : (item.content ? item.content.replace(/<[^>]*>?/gm, '') : '');
+                
+                let coverImg = item.thumbnail || 'https://raw.githubusercontent.com/up2digi-app/up2digital-assets/main/background/heropage_ruang-berita-02.jpg';
+                if (item.content && !item.thumbnail) {
+                    const imgMatch = item.content.match(/<img[^>]+src="([^">]+)"/);
+                    if (imgMatch && imgMatch[1]) coverImg = imgMatch[1];
+                }
+
+                let authorName = item.author || 'Tim Publikasi';
+                // FIX FOR BLOGGER AUTHOR NAME
+                if (authorName.includes('noreply@blogger.com')) {
+                    authorName = 'Kulineria Digital';
+                }
+
+                const categoryTag = (item.categories && item.categories.length > 0) ? item.categories[0] : 'Kabar Digital';
+                const artKey = `dyn-art-rss-${index}`;
+                
+                dynamicArticleDatabase[artKey] = {
+                    category: categoryTag, title: item.title, author: authorName,
+                    date: dateStr, readtime: '3 Menit Baca',
+                    content: item.content || `<p class="lead text-xl text-slate-600 font-normal">${snippet}</p>`
+                };
+                
+                gridHtml += `
+                <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-row items-stretch h-32 sm:h-36">
+                    <div class="relative w-1/3 sm:w-2/5 bg-gray-200 overflow-hidden cursor-pointer flex-shrink-0" onclick="openFullArticle('${artKey}')">
+                        <img src="${coverImg}" alt="${item.title}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=Image'">
+                    </div>
+                    <div class="p-4 sm:p-5 flex flex-col justify-center flex-grow overflow-hidden">
+                        <span class="text-[10px] font-bold text-up2accent uppercase tracking-wider mb-1 block truncate">${categoryTag}</span>
+                        <h3 class="text-sm sm:text-base font-bold text-up2dark mb-1 sm:mb-2 line-clamp-2 cursor-pointer hover:text-up2accent transition-colors" onclick="openFullArticle('${artKey}')">${item.title}</h3>
+                        <div class="mt-auto flex items-center justify-between"><span class="text-[10px] text-gray-400 font-medium">${dateStr}</span></div>
+                    </div>
+                </div>`;
+            });
+            gridContainer.innerHTML = gridHtml;
+        }
+
+        function renderDynamicVideos(items) {
+            const grid = document.getElementById('dynamic-videos-grid');
+            if(!grid) return;
+            let html = '';
+            items.slice(0, 3).forEach(item => {
+                let videoId = item.link.includes('v=') ? item.link.split('v=')[1] : item.link.split('/').pop();
+                videoId = videoId.split('&')[0];
+                const dateObj = new Date(item.pubDate.replace(/-/g, '/'));
+                const dateStr = isNaN(dateObj) ? item.pubDate : dateObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                html += `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 flex flex-col hover:shadow-md transition-shadow">
+                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="relative aspect-video bg-black group overflow-hidden block">
+                        <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='${item.thumbnail}'">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-colors"><div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+                    </a>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-1"><span class="text-[10px] font-bold text-red-500 uppercase tracking-wider" data-i18n="dyn-latest-show">Tayangan Terbaru</span><span class="text-[10px] text-gray-400 font-medium">${dateStr}</span></div>
+                        <h3 class="font-bold text-up2dark text-base mt-1 line-clamp-2">${item.title}</h3>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+            setLang(currentLang);
+        }
+
+        function openFullArticle(artKey) {
+            const artData = dynamicArticleDatabase[artKey];
+            if (!artData) return;
+            document.getElementById('art-category').textContent = artData.category;
+            document.getElementById('art-title').textContent = artData.title;
+            document.getElementById('art-author').textContent = artData.author;
+            document.getElementById('art-date').textContent = artData.date;
+            
+            if (artData.readtime) {
+                document.getElementById('art-readtime').textContent = artData.readtime;
+                document.getElementById('art-readtime-dot').classList.remove('hidden');
+            } else {
+                document.getElementById('art-readtime').textContent = '';
+                document.getElementById('art-readtime-dot').classList.add('hidden');
+            }
+            document.getElementById('art-content').innerHTML = artData.content;
+            document.querySelectorAll('.view-page').forEach(el => el.classList.remove('active'));
+            const detailView = document.getElementById('view-article-detail');
+            if (detailView) { detailView.classList.add('active'); window.scrollTo(0, 0); }
+        }
+
+        function closeFullArticle() {
+            document.querySelectorAll('.view-page').forEach(el => el.classList.remove('active'));
+            const newsView = document.getElementById('view-news');
+            if (newsView) { newsView.classList.add('active'); window.scrollTo(0, 0); }
+            window.location.hash = '#/news';
+        }
+
+        function filterNewsCategory(category) {
+            const btnAll = document.getElementById('tab-news-all');
+            const btnArticles = document.getElementById('tab-news-articles');
+            const btnMedia = document.getElementById('tab-news-media');
+            const mediaSec = document.getElementById('media-showcase-section');
+            const artSec = document.getElementById('articles-showcase-section');
+            const activeClass = "px-5 py-2 rounded-full text-sm font-semibold transition-all bg-up2accent text-white shadow-md";
+            const inactiveClass = "px-5 py-2 rounded-full text-sm font-semibold transition-all bg-white/10 text-gray-300 hover:bg-white/20";
+
+            if (category === 'all') {
+                btnAll.className = activeClass; btnArticles.className = inactiveClass; btnMedia.className = inactiveClass + " flex items-center gap-2";
+                if (mediaSec) mediaSec.style.display = 'block'; if (artSec) artSec.style.display = 'block';
+            } else if (category === 'articles') {
+                btnAll.className = inactiveClass; btnArticles.className = activeClass; btnMedia.className = inactiveClass + " flex items-center gap-2";
+                if (mediaSec) mediaSec.style.display = 'none'; if (artSec) artSec.style.display = 'block';
+            } else if (category === 'media') {
+                btnAll.className = inactiveClass; btnArticles.className = inactiveClass; btnMedia.className = activeClass + " flex items-center gap-2";
+                if (mediaSec) mediaSec.style.display = 'block'; if (artSec) artSec.style.display = 'none';
+            }
+        }
+
+        function toggleAccordion(contentId, iconId) {
+            const content = document.getElementById(contentId);
+            const icon = document.getElementById(iconId);
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null; content.classList.remove('expanded'); icon.classList.remove('rotated');
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px"; content.classList.add('expanded'); icon.classList.add('rotated');
+            }
+        }
+
+        function getCleanArticleUrl() {
+            let url = window.location.href;
+            // Cegah link blob saat uji coba di editor Canvas
+            if (url.startsWith('blob:')) {
+                url = 'https://www.up2digital.id' + (window.location.hash || '#/news');
+            }
+            return encodeURIComponent(url);
+        }
+
+        function copyArticleUrl(isForSocial = false, platformName = '') {
+            try {
+                let urlToCopy = decodeURIComponent(getCleanArticleUrl());
+                const tempInput = document.createElement('input');
+                tempInput.value = urlToCopy;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                
+                if (isForSocial) {
+                    openModal('Tautan Disalin', `Tautan berhasil disalin. Silakan buka aplikasi ${platformName} Anda dan tempel (paste) tautan tersebut untuk membagikannya.`, 'Mengerti');
+                } else {
+                    openModal('Tautan Disalin', 'Alamat tautan artikel telah berhasil disalin ke clipboard Anda.', 'OK');
+                }
+            } catch (err) {
+                openModal('Perhatian', 'Browser ini tidak mendukung fitur salin otomatis. Silakan salin URL di bagian atas browser Anda secara manual.', 'Tutup');
+            }
+        }
+
+        function shareToWhatsApp() {
+            const url = getCleanArticleUrl();
+            const title = encodeURIComponent(document.getElementById('art-title').textContent || 'Artikel up2digital');
+            window.open(`https://wa.me/?text=${title}%20-%20${url}`, '_blank');
+        }
+
+        function shareToFacebook() {
+            const url = getCleanArticleUrl();
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function shareToX() {
+            const url = getCleanArticleUrl();
+            const title = encodeURIComponent(document.getElementById('art-title').textContent || 'Artikel up2digital');
+            window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`, '_blank');
+        }
+
+        function shareToIGTikTok(platform) {
+            // IG & TikTok tidak mendukung auto-share text via web browser. Kita salin tautan dan arahkan pengguna.
+            copyArticleUrl(true, platform);
+        }
+
+        function shareToEmail() {
+            const url = getCleanArticleUrl();
+            const title = encodeURIComponent(document.getElementById('art-title').textContent || 'Artikel up2digital');
+            window.open(`mailto:?subject=${title}&body=Halo,%20saya%20menemukan%20artikel%20menarik%20di%20up2digital:%0A%0A${title}%0A${url}`, '_blank');
+        }
+
+        // --- CORE NAVIGATION ---
+        function router() {
+            const hash = window.location.hash || '#/';
+            const path = hash.replace('#', '');
+            document.querySelectorAll('.view-page').forEach(el => el.classList.remove('active'));
+            let viewId = 'view-home';
+            if (path === '/') viewId = 'view-home';
+            else if (path === '/about') viewId = 'view-about';
+            else if (path === '/products') viewId = 'view-products';
+            else if (path === '/news') viewId = 'view-news';
+            else if (path === '/careers') viewId = 'view-careers';
+            else if (path === '/contact') viewId = 'view-contact';
+            const targetView = document.getElementById(viewId);
+            if(targetView) { targetView.classList.add('active'); window.scrollTo(0, 0); handleNavbarScroll(); updateActiveNavState(hash); }
+        }
+
+        function updateActiveNavState(currentHash) {
+            document.querySelectorAll('.nav-link-item').forEach(link => {
+                link.classList.remove('text-up2accent');
+                if (currentHash === link.getAttribute('href') && !link.classList.contains('bg-up2accent')) link.classList.add('text-up2accent');
+            });
+        }
+
+        function handleNavbarScroll() {
+            const navbar = document.getElementById('navbar');
+            if (window.location.hash === '#/careers') navbar.classList.remove('nav-scrolled');
+            else { if (window.scrollY > 50) navbar.classList.add('nav-scrolled'); else navbar.classList.remove('nav-scrolled'); }
+        }
+
+        const mobileMenu = document.getElementById('mobile-menu');
+        function toggleMenu() {
+            if (mobileMenu.classList.contains('drawer-closed')) { mobileMenu.classList.remove('drawer-closed'); mobileMenu.classList.add('drawer-open'); document.body.style.overflow = 'hidden'; } 
+            else { mobileMenu.classList.remove('drawer-open'); mobileMenu.classList.add('drawer-closed'); document.body.style.overflow = ''; }
+        }
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMenu);
+        document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
+        document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', () => { if(mobileMenu.classList.contains('drawer-open')) toggleMenu(); }));
+
+        const modal = document.getElementById('global-modal');
+        const modalContent = document.getElementById('modal-content');
+        window.openModal = function(title, message, btnText) {
+            document.getElementById('modal-title').textContent = title; document.getElementById('modal-message').innerHTML = message; document.getElementById('modal-btn').textContent = btnText || 'Close';
+            modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95'); }, 10); document.body.style.overflow = 'hidden';
+        };
+        window.closeModal = function() {
+            modal.classList.add('opacity-0'); modalContent.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); document.body.style.overflow = ''; }, 300);
+        };
+        window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        function openPrivacyModal() {
+            const title = currentLang === 'en' ? 'Privacy Notice' : 'Pemberitahuan Privasi';
+            const contentEn = `<div class='text-left space-y-3'><strong>Introduction</strong><br>This Privacy Notice explains how up2digital collects and uses your data.<br><br><strong>Data Collection & Use</strong><br>We only collect contact information when you voluntarily fill out the Contact Us form. Such data is used purely to respond to your inquiries and improve our ecosystem services.<br><br><strong>Security</strong><br>The confidentiality of your Personal Data is our top priority. We make reasonable technical efforts to protect and secure your information from unauthorized access.</div>`;
+            const contentId = `<div class='text-left space-y-3'><strong>Pengantar</strong><br>Pemberitahuan Privasi ini menjelaskan bagaimana up2digital mengumpulkan dan menggunakan data Anda.<br><br><strong>Pengumpulan & Penggunaan Data</strong><br>Kami hanya mengumpulkan informasi kontak saat Anda mengisi formulir Hubungi Kami secara sukarela. Data tersebut digunakan murni untuk merespons inkuiri Anda dan meningkatkan layanan ekosistem kami.<br><br><strong>Keamanan</strong><br>Kerahasiaan Data Pribadi Anda adalah prioritas utama. Kami melakukan upaya teknis sewajarnya untuk melindungi dan mengamankan informasi Anda dari akses yang tidak sah.</div>`;
+            openModal(title, currentLang === 'en' ? contentEn : contentId, currentLang === 'en' ? 'Close' : 'Tutup');
+        }
+
+        function openSitemapModal() {
+            const title = currentLang === 'en' ? 'Sitemap' : 'Peta Situs';
+            const contentEn = `<ul class='list-disc pl-6 space-y-3 text-left text-gray-700'><li><a href='#/' onclick='closeModal()'>Home</a></li><li><a href='#/about' onclick='closeModal()'>About Us</a></li><li><a href='#/products' onclick='closeModal()'>Products</a></li><li><a href='#/news' onclick='closeModal()'>Newsroom</a></li><li><a href='#/careers' onclick='closeModal()'>Careers</a></li><li><a href='#/contact' onclick='closeModal()'>Contact Us</a></li></ul>`;
+            const contentId = `<ul class='list-disc pl-6 space-y-3 text-left text-gray-700'><li><a href='#/' onclick='closeModal()'>Beranda</a></li><li><a href='#/about' onclick='closeModal()'>Tentang Kami</a></li><li><a href='#/products' onclick='closeModal()'>Produk Ekosistem</a></li><li><a href='#/news' onclick='closeModal()'>Ruang Berita & Media</a></li><li><a href='#/careers' onclick='closeModal()'>Karier</a></li><li><a href='#/contact' onclick='closeModal()'>Hubungi Kami</a></li></ul>`;
+            openModal(title, currentLang === 'en' ? contentEn : contentId, currentLang === 'en' ? 'Close' : 'Tutup');
+        }
+
+        function openCookieModal() {
+            const title = currentLang === 'en' ? 'Manage Cookies' : 'Pemberitahuan Cookie';
+            const contentEn = `<div class='text-left space-y-3'>This website uses essential cookies that are strictly necessary for the operation of basic functionality, such as remembering your preferences and maintaining navigation security.<br><br>We do not use third-party targeting cookies that aggressively track your behavior outside of our website.</div>`;
+            const contentId = `<div class='text-left space-y-3'>Situs web ini menggunakan cookie esensial yang sangat diperlukan untuk pengoperasian fungsionalitas dasar, seperti mengingat preferensi Anda dan menjaga keamanan navigasi.<br><br>Kami tidak menggunakan cookie penargetan pihak ketiga yang melacak perilaku Anda di luar situs web kami secara agresif.</div>`;
+            openModal(title, currentLang === 'en' ? contentEn : contentId, currentLang === 'en' ? 'Understood' : 'Mengerti');
+        }
+
+        const ecosystemDataNodes = [
+            { name: "Technology", nodes: [{ title: "UP2Apps", desc: "Mobile Platform", x: 20, y: 15 }, { title: "WebKit", desc: "Web Infrastructure", x: 80, y: 25 }, { title: "GASORA", desc: "Custom App Builder", x: 50, y: 85 }] },
+            { name: "Commerce", nodes: [{ title: "UP2Commerce", desc: "Retail Engine", x: 15, y: 40 }, { title: "Blanjaan", desc: "UMKM Marketplace", x: 75, y: 15 }, { title: "UP2POS", desc: "Smart Register", x: 85, y: 75 }] },
+            { name: "Media", nodes: [{ title: "UP2Media", desc: "Digital Network", x: 25, y: 75 }, { title: "Jajaman", desc: "Culinary Series", x: 75, y: 35 }, { title: "Kulineria Digital", desc: "News & Insight", x: 50, y: 15 }] },
+            { name: "Creative", nodes: [{ title: "UP2Studio", desc: "Content Production", x: 20, y: 30 }, { title: "UP2Design AI", desc: "AI Visual Creator", x: 80, y: 65 }] },
+            { name: "Education", nodes: [{ title: "UP2Edu", desc: "Learning Hub", x: 50, y: 15 }, { title: "Academy", desc: "Skillset Training", x: 25, y: 80 }] }
+        ];
+
+        let currentPillarIndex = 0; let pillarInterval;
+        function renderEcosystemNodes() {
+            const pillarText = document.getElementById('pillar-text'); const nodesContainer = document.getElementById('floating-nodes'); const linesContainer = document.getElementById('node-lines');
+            if (!pillarText || !nodesContainer || !linesContainer) return;
+            const pillar = ecosystemDataNodes[currentPillarIndex];
+            pillarText.style.opacity = '0'; pillarText.style.transform = 'scale(0.9)';
+            const oldNodes = nodesContainer.querySelectorAll('.eco-node'); oldNodes.forEach(node => node.classList.remove('active')); linesContainer.innerHTML = ''; 
+            setTimeout(() => {
+                pillarText.textContent = pillar.name; pillarText.style.opacity = '1'; pillarText.style.transform = 'scale(1)'; nodesContainer.innerHTML = ''; let linesHTML = '';
+                pillar.nodes.forEach(node => {
+                    const wrapper = document.createElement('div'); wrapper.className = 'eco-node-wrapper'; wrapper.style.left = node.x + '%'; wrapper.style.top = node.y + '%';
+                    wrapper.innerHTML = `<div class="eco-node"><span class="text-up2accent text-lg leading-none">●</span><div class="flex flex-col text-left"><span class="text-white font-bold leading-none mb-1">${node.title}</span><span class="text-white/50 text-[10px] uppercase tracking-wider leading-none">${node.desc}</span></div></div>`;
+                    nodesContainer.appendChild(wrapper); linesHTML += `<line x1="50%" y1="50%" x2="${node.x}%" y2="${node.y}%" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" class="line-animate" />`;
+                });
+                linesContainer.innerHTML = linesHTML; setTimeout(() => { const newNodes = nodesContainer.querySelectorAll('.eco-node'); newNodes.forEach(node => node.classList.add('active')); }, 50);
+            }, 600); 
+        }
+
+        function startEcosystemAnimation() {
+            if(window.location.hash !== '#/' && window.location.hash !== '') return;
+            renderEcosystemNodes();
+            if(pillarInterval) clearInterval(pillarInterval);
+            pillarInterval = setInterval(() => { currentPillarIndex = (currentPillarIndex + 1) % ecosystemDataNodes.length; renderEcosystemNodes(); }, 5000); 
+        }
+
+        window.addEventListener('hashchange', () => {
+            router();
+            if(window.location.hash === '#/' || window.location.hash === '') { setTimeout(startEcosystemAnimation, 100); } else { if(pillarInterval) clearInterval(pillarInterval); }
+        });
+        window.addEventListener('scroll', handleNavbarScroll);
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            setLang('id');
+            router();
+            handleNavbarScroll();
+            if(window.location.hash === '#/' || window.location.hash === '') startEcosystemAnimation();
+            fetchLiveContent();
+        });
+    </script>
+</body>
+</html>

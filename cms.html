@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<!-- VERSION: v4.5 (KPI LENGKAP, TAMBAH PRODUK & FOLLOW-UP INBOX) -->
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Dashboard | up2digital</title>
+    
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/up2digi-app/up2digital/main/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="https://raw.githubusercontent.com/up2digi-app/up2digital/main/favicon-96x96.png">
+    <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/up2digi-app/up2digital/main/favicon.svg">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/up2digi-app/up2digital/main/apple-touch-icon.png">
+    <link rel="manifest" href="https://raw.githubusercontent.com/up2digi-app/up2digital/main/site.webmanifest">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { up2accent: '#0ea5e9', up2dark: '#0f172a', up2gray: '#64748b', up2light: '#f8fafc' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f1f5f9; color: #0f172a; -webkit-font-smoothing: antialiased; }
+        .view-section { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .view-section.active { display: block; opacity: 1; }
+        .sidebar-link.active { background-color: #0ea5e9; color: white; font-weight: 600; }
+        .sidebar-link.active i { color: white; }
+        .table-container::-webkit-scrollbar { height: 8px; width: 8px; }
+        .table-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #0ea5e9; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <div id="login-overlay" class="fixed inset-0 bg-up2dark z-[100] flex items-center justify-center transition-opacity duration-500">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-md w-full mx-4 text-center">
+            <h2 class="text-2xl font-bold text-up2dark mb-2">CMS Administrator</h2>
+            <p class="text-gray-500 text-sm mb-8">Masukkan PIN akses untuk masuk panel pengelola.</p>
+            <form onsubmit="handleLogin(event)" class="space-y-6">
+                <input type="password" id="pin-input" required class="w-full text-center text-xl tracking-widest px-4 py-4 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-up2accent/50 focus:border-up2accent">
+                <button type="submit" class="w-full py-4 bg-up2dark hover:bg-black text-white font-bold rounded-xl transition-all shadow-lg">Masuk Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <aside class="w-64 bg-up2dark text-white flex-shrink-0 flex flex-col hidden md:flex" id="sidebar">
+        <div class="h-20 flex items-center px-6 border-b border-white/10 shrink-0">
+            <span class="font-bold text-xl tracking-tight text-white">UP2 CMS Panel</span>
+        </div>
+        <div class="p-4 flex-1 overflow-y-auto space-y-1">
+            <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 mt-2 px-3">Main Data</div>
+            <a href="#" onclick="navigate('dashboard')" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10" data-target="dashboard"><i class="ph ph-squares-four text-xl"></i> <span>Dashboard</span></a>
+            <a href="#" onclick="navigate('news')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10" data-target="news"><i class="ph ph-newspaper text-xl"></i> <span>1. Berita & Blog</span></a>
+            <a href="#" onclick="navigate('contacts')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10" data-target="contacts"><i class="ph ph-envelope-simple-open text-xl"></i> <span>2. Pesan Inkuiri</span></a>
+            <a href="#" onclick="navigate('careers')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10" data-target="careers"><i class="ph ph-briefcase text-xl"></i> <span>3. Lowongan Karir</span></a>
+            
+            <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 mt-6 px-3">Site Editor</div>
+            <a href="#" onclick="navigate('products')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10" data-target="products"><i class="ph ph-package text-xl"></i> <span>4. Info Produk</span></a>
+            <a href="#" onclick="navigate('assets')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10" data-target="assets"><i class="ph ph-image text-xl"></i> <span>5. Aset Visual (Link)</span></a>
+            <a href="#" onclick="navigate('copywriting')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10" data-target="copywriting"><i class="ph ph-text-aa text-xl"></i> <span>6. Teks & Links</span></a>
+            
+            <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 mt-6 px-3">System</div>
+            <a href="#" onclick="navigate('settings')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10" data-target="settings"><i class="ph ph-gear text-xl"></i> <span>Pengaturan API</span></a>
+        </div>
+        <div class="p-4 border-t border-white/10 shrink-0">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-sm font-semibold"><i class="ph ph-sign-out text-lg"></i> Keluar</button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden relative">
+        <header class="h-16 bg-white border-b border-gray-200 flex md:hidden items-center justify-between px-4 shrink-0 shadow-sm relative z-40 w-full">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-up2dark text-lg" id="mobile-topbar-title">UP2 CMS</span>
+            </div>
+            <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-up2dark p-2 focus:outline-none">
+                <i class="ph ph-list text-2xl"></i>
+            </button>
+        </header>
+
+        <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50 flex flex-col md:hidden max-h-[calc(100vh-4rem)] overflow-y-auto pb-4">
+            <a href="#" onclick="navigate('dashboard'); document.getElementById('mobile-menu').classList.add('hidden')" class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 active:bg-gray-50"><i class="ph ph-squares-four text-xl text-up2accent"></i> Dashboard</a>
+            <a href="#" onclick="navigate('news'); document.getElementById('mobile-menu').classList.add('hidden')" class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 active:bg-gray-50"><i class="ph ph-newspaper text-xl text-up2accent"></i> 1. Berita & Blog</a>
+            <a href="#" onclick="navigate('contacts'); document.getElementById('mobile-menu').classList.add('hidden')" class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 active:bg-gray-50"><i class="ph ph-envelope-simple-open text-xl text-up2accent"></i> 2. Pesan Inkuiri</a>
+            <a href="#" onclick="navigate('careers'); document.getElementById('mobile-menu').classList.add('hidden')" class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 active:bg-gray-50"><i class="ph ph-briefcase text-xl text-up2accent"></i> 3. Lowongan Karir</a>
+            <a href="#" onclick="navigate('products'); document.getElementById('mobile-menu').classList.add('hidden')" class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 active:bg-gray-50"><i class="ph ph-package text-xl text-up2accent"></i> 4. Info Produk</a>
+            <a href="#" onclick="navigate('assets'); document.getElementById('mobile-menu').classList.add('hidden')" class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 active:bg-gray-50"><i class="ph ph-image text-xl text-up2accent"></i> 5. Aset Visual</a>
+            <a href="#" onclick="navigate('copywriting'); document.getElementById('mobile-menu').classList.add('hidden')" class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 active:bg-gray-50"><i class="ph ph-text-aa text-xl text-up2accent"></i> 6. Teks & Links</a>
+            <a href="#" onclick="navigate('settings'); document.getElementById('mobile-menu').classList.add('hidden')" class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 active:bg-gray-50"><i class="ph ph-gear text-xl text-gray-500"></i> Pengaturan API</a>
+            <button onclick="logout()" class="w-full text-left px-6 py-4 flex items-center gap-3 text-red-500 active:bg-gray-50"><i class="ph ph-sign-out text-xl"></i> Keluar</button>
+        </div>
+
+        <header class="h-20 bg-white border-b border-gray-200 hidden md:flex items-center justify-between px-8 shrink-0">
+            <h1 class="text-2xl font-bold text-up2dark tracking-tight" id="topbar-title">Dashboard Overview</h1>
+            <div class="flex items-center gap-4">
+                <div id="api-status-badge" class="px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold flex items-center gap-2">Mode Demo Lokal</div>
+                <div class="w-10 h-10 rounded-full bg-up2dark text-white flex items-center justify-center font-bold text-lg shadow-md">A</div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+            
+            <!-- 0. DASHBOARD -->
+            <section id="sec-dashboard" class="view-section active">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 mb-8">
+                    <div class="bg-white rounded-2xl p-5 border shadow-sm flex flex-col justify-between">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">Berita & Blog</p>
+                        <h3 class="text-2xl md:text-3xl font-bold text-up2dark" id="stat-news">0</h3>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border shadow-sm flex flex-col justify-between">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">Pesan Masuk</p>
+                        <h3 class="text-2xl md:text-3xl font-bold text-up2dark" id="stat-contacts">0</h3>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border shadow-sm flex flex-col justify-between">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">Lowongan Karir</p>
+                        <h3 class="text-2xl md:text-3xl font-bold text-up2dark" id="stat-careers">0</h3>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border shadow-sm flex flex-col justify-between">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">Info Produk</p>
+                        <h3 class="text-2xl md:text-3xl font-bold text-up2dark" id="stat-products">0</h3>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border shadow-sm flex flex-col justify-between">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">Aset Visual</p>
+                        <h3 class="text-2xl md:text-3xl font-bold text-up2dark" id="stat-assets">0</h3>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border shadow-sm cursor-pointer hover:border-up2accent transition-colors flex flex-col justify-between" onclick="navigate('settings')">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">Status API</p>
+                        <h3 class="text-sm md:text-base font-bold text-yellow-600 truncate mt-1" id="stat-api">Demo (Mock)</h3>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. NEWS -->
+            <section id="sec-news" class="view-section">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Berita & Blog</h2>
+                    <button onclick="fetchData('news')" class="text-sm text-up2accent font-bold"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
+                </div>
+                <div class="bg-white rounded-2xl border shadow-sm overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap"><tbody id="tb-news" class="divide-y divide-gray-100"></tbody></table>
+                </div>
+            </section>
+
+            <!-- 2. CONTACTS (INBOX) -->
+            <section id="sec-contacts" class="view-section">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Kotak Masuk Pesan</h2>
+                    <button onclick="fetchData('contacts')" class="text-sm text-up2accent font-bold"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
+                </div>
+                <div class="bg-white rounded-2xl border shadow-sm overflow-x-auto table-container">
+                    <table class="w-full text-left text-sm whitespace-nowrap"><tbody id="tb-contacts" class="divide-y divide-gray-100"></tbody></table>
+                </div>
+            </section>
+
+            <!-- 3. CAREERS -->
+            <section id="sec-careers" class="view-section">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Lowongan Karir</h2>
+                    <button onclick="openGenericModal('careers', 'add', {})" class="px-4 py-2 bg-up2dark text-white text-sm font-bold rounded-lg hover:bg-black transition-colors shadow">+ Tambah Job</button>
+                </div>
+                <div class="bg-white rounded-2xl border shadow-sm overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap"><tbody id="tb-careers" class="divide-y divide-gray-100"></tbody></table>
+                </div>
+            </section>
+
+            <!-- 4. PRODUCTS -->
+            <section id="sec-products" class="view-section">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Manajemen Teks Produk</h2>
+                    <button onclick="openGenericModal('products', 'add', {})" class="px-4 py-2 bg-up2dark text-white text-sm font-bold rounded-lg hover:bg-black transition-colors shadow">+ Tambah Produk</button>
+                </div>
+                <div class="bg-white rounded-2xl border shadow-sm overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap"><tbody id="tb-products" class="divide-y divide-gray-100"></tbody></table>
+                </div>
+            </section>
+
+            <!-- 5. ASSETS -->
+            <section id="sec-assets" class="view-section">
+                <h2 class="text-xl font-bold mb-4">Pengaturan Asset Visual (URL)</h2>
+                <div class="bg-white rounded-2xl border shadow-sm overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap"><tbody id="tb-assets" class="divide-y divide-gray-100"></tbody></table>
+                </div>
+            </section>
+
+            <!-- 6. COPYWRITING -->
+            <section id="sec-copywriting" class="view-section">
+                <h2 class="text-xl font-bold mb-4">Pengaturan Copywriting & Link Utama</h2>
+                <div class="bg-white rounded-2xl border shadow-sm overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap"><tbody id="tb-copywriting" class="divide-y divide-gray-100"></tbody></table>
+                </div>
+            </section>
+
+            <!-- SETTINGS -->
+            <section id="sec-settings" class="view-section">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-2xl p-6 border shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-emerald-600 font-bold mb-2">
+                                <i class="ph ph-check-circle text-xl"></i> URL API Aktif (Read Only)
+                            </div>
+                            <p class="text-xs text-gray-500 mb-4">Endpoint Web App GAS yang sedang digunakan aplikasi untuk sinkronisasi data real-time.</p>
+                            <div class="p-3 bg-gray-50 border rounded-xl text-xs font-mono text-gray-700 break-all min-h-[44px] flex items-center" id="active-api-display">Memuat URL aktif...</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 border shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-up2dark font-bold mb-2">
+                                <i class="ph ph-pencil-simple text-xl"></i> Perbarui / Ganti URL API
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">Masukkan endpoint URL Web App GAS baru jika Anda melakukan deployment ulang.</p>
+                            <input type="text" id="api-url-input" placeholder="https://script.google.com/.../exec" class="w-full px-3 py-2.5 bg-gray-50 border rounded-xl text-xs font-mono">
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button onclick="saveSettings()" class="px-5 py-2 bg-up2dark text-white font-bold rounded-xl text-xs shadow hover:bg-black transition-colors">Simpan Pengaturan</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="modal-generic" class="fixed inset-0 bg-black/50 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <h3 class="font-bold text-lg" id="modal-gen-title">Edit Data</h3>
+                <button onclick="document.getElementById('modal-generic').style.display='none'" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <div class="p-5">
+                <form id="form-generic" onsubmit="submitGenericForm(event)" class="space-y-4">
+                    <div id="form-gen-fields"></div>
+                    <input type="hidden" id="form-gen-id">
+                    <input type="hidden" id="form-gen-type">
+                    <div class="pt-4 flex justify-end sticky bottom-0 bg-white">
+                        <button type="submit" id="btn-save-gen" class="px-6 py-2.5 bg-up2accent hover:bg-sky-500 text-white font-bold rounded-lg text-sm shadow transition-colors">Simpan Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gasUrl = localStorage.getItem('up2digital_gas_url') || '';
+        let isDemoMode = !gasUrl;
+        let stateData = { news: [], contacts: [], careers: [], products: [], assets: [], copywriting: [] };
+
+        const mockData = {
+            news: [{ id: "n1", title: "Artikel Mock Demo", date: "2026-09-01", category: "Kabar", author: "Admin", content: "Isi", thumbnail: "https://placehold.co/100x100" }],
+            contacts: [{ timestamp: "2026-09-01T10:00:00Z", name: "User Tamu", email: "user@mail.com", phone: "081234567890", topic: "GASORA - Kustom Aplikasi Bisnis", message: "Halo up2digital, saya tertarik." }],
+            careers: [{ id: "c1", title: "Frontend Dev", department: "Technology", location: "Remote", status: "Buka" }],
+            products: [{ id: "prod_webkit", product_name: "WebKit", description: "Solusi website premium...", link_url: "#", link_text: "Klik" }],
+            assets: [{ id: "asset_hero", element_name: "Hero Banner", asset_url: "https://placehold.co/100x100", type: "Image" }],
+            copywriting: [{ id: "copy_1", section_name: "Hero Title", text_content: "Membangun Ekosistem Digital" }]
+        };
+
+        if (sessionStorage.getItem('up2_cms_auth') === 'true') {
+            document.getElementById('login-overlay').style.display = 'none';
+            initCMS();
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const pinInput = document.getElementById('pin-input').value;
+            const btn = e.target.querySelector('button');
+            const origText = btn.innerHTML;
+            
+            btn.innerHTML = 'Memeriksa...'; btn.disabled = true;
+
+            // Jika API belum disetting, kita berikan mode Setup
+            if (isDemoMode) {
+                if (pinInput === '0000') {
+                    sessionStorage.setItem('up2_cms_auth', 'true');
+                    document.getElementById('login-overlay').style.display = 'none';
+                    initCMS();
+                } else { 
+                    Swal.fire('Mode Setup', 'API belum tersambung. Gunakan PIN awal 0000 untuk masuk dan mengatur URL API.', 'info'); 
+                }
+                btn.innerHTML = origText; btn.disabled = false;
+                return;
+            }
+
+            // Validasi PIN secara rahasia ke Backend GAS
+            try {
+                const res = await fetch(gasUrl, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'verifyPin', payload: {pin: pinInput} }) 
+                });
+                const json = await res.json();
+                
+                if(json.status === 'success') {
+                    sessionStorage.setItem('up2_cms_auth', 'true');
+                    document.getElementById('login-overlay').style.display = 'none';
+                    initCMS();
+                } else {
+                    Swal.fire('Akses Ditolak', json.message || 'PIN yang Anda masukkan salah.', 'error');
+                }
+            } catch(err) {
+                Swal.fire('Koneksi Gagal', 'Tidak dapat memverifikasi PIN ke server. Pastikan URL API Pengaturan benar.', 'error');
+            } finally {
+                btn.innerHTML = origText; btn.disabled = false;
+            }
+        }
+        
+        function logout() { sessionStorage.removeItem('up2_cms_auth'); location.reload(); }
+
+        function initCMS() {
+            document.getElementById('api-url-input').value = gasUrl;
+            
+            const activeApiDisplay = document.getElementById('active-api-display');
+            if (activeApiDisplay) activeApiDisplay.textContent = gasUrl || "Belum ada URL API tersambung (Mode Demo Lokal aktif)";
+
+            const statApi = document.getElementById('stat-api');
+            const statusBadge = document.getElementById('api-status-badge');
+
+            if (isDemoMode) {
+                if (statApi) { statApi.textContent = "Demo (Mock)"; statApi.className = "text-sm md:text-base font-bold mt-1 text-yellow-600"; }
+                if (statusBadge) { statusBadge.innerHTML = "Mode Demo Lokal"; statusBadge.className = "px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold"; }
+            } else {
+                if (statApi) { statApi.textContent = "Terhubung"; statApi.className = "text-sm md:text-base mt-1 font-bold text-emerald-600"; }
+                if (statusBadge) { statusBadge.innerHTML = "Live GAS API"; statusBadge.className = "px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold"; }
+            }
+            
+            ['news', 'contacts', 'careers', 'products', 'assets', 'copywriting'].forEach(t => fetchData(t));
+        }
+
+        function navigate(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+            document.getElementById('sec-' + viewId).classList.add('active');
+            
+            const desktopLink = document.querySelector(`.sidebar-link[data-target="${viewId}"]`);
+            if (desktopLink) desktopLink.classList.add('active');
+            
+            const titles = {
+                'dashboard': 'Dashboard Overview', 'news': 'Manajemen Berita & Blog', 'contacts': 'Kotak Masuk Pesan',
+                'careers': 'Manajemen Lowongan Karir', 'products': 'Manajemen Info Produk', 'assets': 'Pengaturan Aset Visual',
+                'copywriting': 'Pengaturan Teks & Copywriting', 'settings': 'Pengaturan API Sistem'
+            };
+            
+            const titleText = titles[viewId] || 'CMS Panel';
+            const desktopTitle = document.getElementById('topbar-title');
+            if(desktopTitle) desktopTitle.textContent = titleText;
+            
+            const mobileTitle = document.getElementById('mobile-topbar-title');
+            if(mobileTitle) mobileTitle.textContent = titleText;
+        }
+
+        async function fetchData(type) {
+            if (isDemoMode) {
+                stateData[type] = mockData[type];
+                renderTable(type);
+                updateStats();
+                return;
+            }
+            try {
+                const res = await fetch(`${gasUrl}?action=get${type.charAt(0).toUpperCase() + type.slice(1)}`);
+                const json = await res.json();
+                if(json.status === 'success') { stateData[type] = json.data; renderTable(type); updateStats(); }
+            } catch(e) { console.error("Error fetching " + type, e); }
+        }
+
+        function renderTable(type) {
+            const tbody = document.getElementById('tb-' + type);
+            if (!tbody) return;
+            const data = stateData[type];
+            if (!data || data.length === 0) { tbody.innerHTML = `<tr><td class="p-4 text-center text-gray-400">Data kosong.</td></tr>`; return; }
+
+            let html = '';
+            if (type === 'news') {
+                html = `<tr class="bg-gray-50 text-xs text-gray-500"><th class="p-4">Judul</th><th class="p-4">Tgl</th><th class="p-4">Aksi</th></tr>`;
+                data.forEach(item => html += `<tr><td class="p-4 font-bold">${item.title}</td><td class="p-4 text-xs">${item.date}</td><td class="p-4"><button onclick="deleteRow('deleteNews', '${item.id}', 'news')" class="text-red-500 text-lg hover:text-red-700 transition-colors"><i class="ph ph-trash"></i></button></td></tr>`);
+            } 
+            // MODIFIKASI: Tampilan Follow-Up Kotak Masuk Pesan yang Lebih Rapi
+            else if (type === 'contacts') {
+                html = `<tr class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
+                            <th class="p-4">Tgl</th><th class="p-4">Pengirim</th><th class="p-4">Topik Layanan</th><th class="p-4">Pesan</th><th class="p-4">Aksi / Follow Up</th>
+                        </tr>`;
+                data.forEach(item => {
+                    const date = item.timestamp ? String(item.timestamp).substring(0,10) : '-';
+                    const waNumber = item.phone ? String(item.phone).replace(/[^0-9]/g, '') : '';
+                    const topicText = item.topic ? encodeURIComponent(String(item.topic)) : 'Layanan';
+                    const nameText = item.name ? encodeURIComponent(String(item.name)) : 'Bapak/Ibu';
+                    const waLink = `https://wa.me/${waNumber}?text=Halo%20${nameText},%20kami%20dari%20up2digital%20ingin%20membalas%20pesan%20Anda%20mengenai:%20${topicText}`;
+                    const emailLink = `mailto:${item.email}?subject=Balasan%20Inkuiri%20up2digital:%20${topicText}`;
+
+                    html += `<tr>
+                        <td class="p-4 text-xs font-semibold text-gray-500">${date}</td>
+                        <td class="p-4">
+                            <div class="font-bold text-up2dark">${item.name}</div>
+                            <div class="text-[11px] text-gray-500 flex items-center gap-1"><i class="ph ph-phone"></i> ${item.phone}</div>
+                            <div class="text-[11px] text-sky-500 flex items-center gap-1"><i class="ph ph-envelope"></i> ${item.email}</div>
+                        </td>
+                        <td class="p-4 text-xs font-bold text-gray-700"><span class="bg-gray-100 px-2 py-1 rounded-md">${item.topic || '-'}</span></td>
+                        <td class="p-4"><div class="w-48 truncate text-xs text-gray-500 leading-relaxed" title="${item.message}">${item.message}</div></td>
+                        <td class="p-4 flex gap-2 items-center">
+                            <a href="${waLink}" target="_blank" title="Balas via WhatsApp" class="px-3 py-1.5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-500 hover:text-white text-emerald-600 rounded-lg text-xs font-bold flex items-center gap-1 transition-all shadow-sm">
+                                <i class="ph ph-whatsapp-logo text-base"></i> WA
+                            </a>
+                            <a href="${emailLink}" target="_blank" title="Balas via Email" class="px-3 py-1.5 bg-blue-50 border border-blue-200 hover:bg-blue-500 hover:text-white text-blue-600 rounded-lg text-xs font-bold flex items-center gap-1 transition-all shadow-sm">
+                                <i class="ph ph-envelope-simple text-base"></i> Email
+                            </a>
+                            <button onclick="deleteRow('deleteContacts', '${item.timestamp}', 'contacts')" class="p-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all ml-1 border border-red-100" title="Hapus Pesan">
+                                <i class="ph ph-trash text-base"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+            } 
+            else if (type === 'careers') {
+                html = `<tr class="bg-gray-50 text-xs text-gray-500"><th class="p-4">Posisi</th><th class="p-4">Status</th><th class="p-4">Aksi</th></tr>`;
+                data.forEach(item => html += `<tr><td class="p-4 font-bold">${item.title}<br><span class="text-xs font-normal text-gray-500">${item.department} &bull; ${item.location}</span></td><td class="p-4 text-xs font-bold ${item.status==='Buka'?'text-emerald-500':'text-red-500'}">${item.status}</td><td class="p-4 flex gap-2"><button onclick="openGenericModal('careers','edit',${JSON.stringify(item).replace(/"/g, '&quot;')})" class="text-sky-500 text-lg hover:text-sky-600"><i class="ph ph-pencil"></i></button> <button onclick="deleteRow('deleteCareers', '${item.id}', 'careers')" class="text-red-500 text-lg hover:text-red-600"><i class="ph ph-trash"></i></button></td></tr>`);
+            } 
+            else if (['products', 'assets', 'copywriting'].includes(type)) {
+                const col1 = type==='products'?'product_name':type==='assets'?'element_name':'section_name';
+                const col2 = type==='products'?'description':type==='assets'?'asset_url':'text_content';
+                html = `<tr class="bg-gray-50 text-xs text-gray-500"><th class="p-4 w-1/3">Komponen</th><th class="p-4">Nilai / Value</th><th class="p-4">Edit</th></tr>`;
+                data.forEach(item => {
+                    let actionButtons = `<button onclick="openGenericModal('${type}','edit',${JSON.stringify(item).replace(/"/g, '&quot;')})" class="text-sky-500 text-lg px-2 hover:text-sky-600 transition-colors"><i class="ph ph-pencil"></i></button>`;
+                    
+                    // Modifikasi: Tambah tombol Hapus khusus untuk Produk agar bisa mengelola penambahan/pengurangan
+                    if(type === 'products') {
+                        actionButtons += `<button onclick="deleteRow('deleteProducts', '${item.id}', 'products')" class="text-red-500 text-lg px-2 hover:text-red-600 transition-colors"><i class="ph ph-trash"></i></button>`;
+                    }
+
+                    html += `<tr>
+                        <td class="p-4 font-bold text-xs">${item[col1]}<br><span class="font-normal text-[10px] text-gray-400">${item.id}</span></td>
+                        <td class="p-4 text-xs"><div class="w-64 truncate text-gray-500" title="${item[col2]}">${item[col2]}</div></td>
+                        <td class="p-4 flex gap-1">${actionButtons}</td>
+                    </tr>`;
+                });
+            }
+            tbody.innerHTML = html;
+        }
+
+        function updateStats() {
+            if(document.getElementById('stat-news')) document.getElementById('stat-news').textContent = stateData.news.length;
+            if(document.getElementById('stat-contacts')) document.getElementById('stat-contacts').textContent = stateData.contacts.length;
+            if(document.getElementById('stat-careers')) document.getElementById('stat-careers').textContent = stateData.careers.length;
+            if(document.getElementById('stat-products')) document.getElementById('stat-products').textContent = stateData.products.length;
+            if(document.getElementById('stat-assets')) document.getElementById('stat-assets').textContent = stateData.assets.length;
+        }
+
+        function saveSettings() {
+            const urlInput = document.getElementById('api-url-input').value.trim();
+            localStorage.setItem('up2digital_gas_url', urlInput);
+            gasUrl = urlInput;
+            isDemoMode = !gasUrl;
+            
+            initCMS(); 
+            
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'URL API Tersimpan & Diperbarui!', showConfirmButton: false, timer: 2000 });
+        }
+
+        function openGenericModal(type, mode, dataObj) {
+            document.getElementById('modal-generic').style.display = 'flex';
+            document.getElementById('form-gen-type').value = type;
+            document.getElementById('form-gen-id').value = dataObj.id || '';
+            document.getElementById('modal-gen-title').textContent = (mode === 'add' ? 'Tambah ' : 'Edit ') + type.toUpperCase();
+            
+            let fieldsHtml = '';
+            if (type === 'careers') {
+                fieldsHtml += makeInput('title', 'Job Title', dataObj.title);
+                fieldsHtml += makeInput('department', 'Departemen', dataObj.department);
+                fieldsHtml += makeInput('location', 'Lokasi', dataObj.location);
+                fieldsHtml += `<label class="block text-xs font-bold text-gray-500 mt-2 mb-1">Status</label><select id="gen-f-status" class="w-full px-3 py-2 bg-gray-50 border rounded-lg text-sm"><option ${dataObj.status==='Buka'?'selected':''}>Buka</option><option ${dataObj.status==='Tutup'?'selected':''}>Tutup</option></select>`;
+            } else if (type === 'products') {
+                if(mode === 'add') {
+                    fieldsHtml += makeInput('id', 'ID Unik Produk (huruf kecil & tanpa spasi, misal: prod_seo)', '');
+                    fieldsHtml += makeInput('product_name', 'Nama Produk', '');
+                } else {
+                    fieldsHtml += `<p class="text-sm font-bold mb-2 text-up2dark">${dataObj.product_name}</p>`;
+                    fieldsHtml += `<input type="hidden" id="gen-f-product_name" value="${dataObj.product_name}">`;
+                }
+                fieldsHtml += makeInput('description', 'Deskripsi Produk', dataObj.description, true);
+                fieldsHtml += makeInput('link_url', 'URL Tujuan (Link)', dataObj.link_url);
+                fieldsHtml += makeInput('link_text', 'Teks Tombol', dataObj.link_text || 'Selengkapnya');
+                fieldsHtml += makeInput('image_url', 'URL Gambar (Opsional untuk Card Ekstra)', dataObj.image_url);
+            } else if (type === 'assets') {
+                fieldsHtml += `<p class="text-sm font-bold mb-2">${dataObj.element_name}</p>`;
+                fieldsHtml += makeInput('asset_url', 'URL Asset (Gambar/Video)', dataObj.asset_url);
+            } else if (type === 'copywriting') {
+                fieldsHtml += `<p class="text-sm font-bold mb-2">${dataObj.section_name}</p>`;
+                fieldsHtml += makeInput('text_content', 'Isi Teks / Konten', dataObj.text_content, true);
+            }
+            document.getElementById('form-gen-fields').innerHTML = fieldsHtml;
+        }
+
+        function makeInput(idSuf, label, value, isTextArea=false) {
+            const val = value || '';
+            if (isTextArea) return `<label class="block text-xs font-bold text-gray-500 mt-3 mb-1">${label}</label><textarea id="gen-f-${idSuf}" rows="3" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-up2accent transition-colors">${val}</textarea>`;
+            return `<label class="block text-xs font-bold text-gray-500 mt-3 mb-1">${label}</label><input type="text" id="gen-f-${idSuf}" value="${val}" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-up2accent transition-colors">`;
+        }
+
+        async function submitGenericForm(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-gen');
+            btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
+
+            const type = document.getElementById('form-gen-type').value;
+            const id = document.getElementById('form-gen-id').value;
+            let payload = { id: id };
+            document.querySelectorAll('[id^="gen-f-"]').forEach(el => { payload[el.id.replace('gen-f-', '')] = el.value; });
+
+            if (isDemoMode) {
+                Swal.fire({toast:true, position:'top-end', icon:'success', title:'Tersimpan (Mode Demo)', showConfirmButton:false, timer:2000});
+                document.getElementById('modal-generic').style.display = 'none';
+                btn.innerHTML = 'Simpan Data'; btn.disabled = false;
+                return;
+            }
+
+            // Automatisasi pembuatan Action untuk GAS Backend (e.g. addCareers, updateProducts)
+            const typeCapitalized = type.charAt(0).toUpperCase() + type.slice(1);
+            let actionName = id ? `update${typeCapitalized}` : `add${typeCapitalized}`;
+            
+            // Khusus Products yang ID-nya di-input manual saat Add
+            if (type === 'products' && document.getElementById('gen-f-id') && document.getElementById('gen-f-id').value) {
+                actionName = 'addProducts';
+            }
+
+            try {
+                const res = await fetch(gasUrl, { method: 'POST', body: JSON.stringify({ action: actionName, payload: payload }) });
+                const json = await res.json();
+                if(json.status === 'success') {
+                    Swal.fire({toast:true, position:'top-end', icon:'success', title:'Berhasil Disimpan!', showConfirmButton:false, timer:2000});
+                    document.getElementById('modal-generic').style.display = 'none';
+                    fetchData(type);
+                } else throw new Error(json.message);
+            } catch(err) { 
+                Swal.fire('Gagal Menyimpan', err.message || 'Cek koneksi API GAS Anda.', 'error'); 
+            } finally {
+                btn.innerHTML = 'Simpan Data'; btn.disabled = false;
+            }
+        }
+
+        async function deleteRow(action, id, typeRef) {
+            const confirmDel = await Swal.fire({
+                title: 'Yakin hapus data ini?',
+                text: "Data yang dihapus dari database tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Hapus Data',
+                cancelButtonText: 'Batal'
+            });
+
+            if (!confirmDel.isConfirmed) return;
+
+            if (isDemoMode) { 
+                Swal.fire('Terbatas', 'Aksi hapus dibatasi dalam mode demo lokal.', 'info'); 
+                return; 
+            }
+            
+            try {
+                const res = await fetch(gasUrl, { method: 'POST', body: JSON.stringify({ action: action, payload: {id:id} }) });
+                const json = await res.json();
+                if(json.status === 'success') {
+                    Swal.fire({toast:true, position:'top-end', icon:'success', title:'Data Terhapus', showConfirmButton:false, timer:2000});
+                    fetchData(typeRef);
+                } else throw new Error(json.message);
+            } catch(err) { Swal.fire('Error', err.message, 'error'); }
+        }
+    </script>
+</body>
+</html>
